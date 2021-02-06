@@ -1,4 +1,5 @@
-"time", "temp", "dtemp/dtime", "state"0,15,-1.5,Heating
+"time","temp","dtemp/dtime","state"
+0,15,-1.5,Heating
 1,13.5,12.5,Heating
 2,26.0,0.0,No heating
 3,26.0,-2.6,No heating
