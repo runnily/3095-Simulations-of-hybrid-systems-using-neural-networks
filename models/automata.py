@@ -65,12 +65,12 @@ class Automata:
             dydx = self.current.behaviour(y) # Get the change rate of change
             self.transitions(y) # To change the state if needed
             #print(x,y,dydx) 
-            text += "{x},{y},{dydx}\n".format(x=x, y=y,dydx=dydx)
+            text += "{x},{y},{dydx},{state}\n".format(x=x, y=y,dydx=dydx, state=self.current.name)
             y += dydx*delta # update the change
             x += delta # delta
 
         with open(filename, "r+") as file:
-            writer = csv.DictWriter(file, fieldnames=["x", "y", "dy/dx"])
+            writer = csv.DictWriter(file, fieldnames=["x", "y", "dy/dx", "state"])
             try: 
                 csv.Sniffer().has_header(file.read(2048))
             except:
