@@ -56,7 +56,7 @@ for epoch in range(num_epochs):
     for batch_idx, (data, targets) in enumerate(train_loader): # data is the images, targets is the correct image
         data = data.to(device=device)
         targets = targets.to(device=device)
-        
+       
         # into torch.size(64, 784)
         data = data.reshape(data.shape[0], -1) # flatten the shape
 
