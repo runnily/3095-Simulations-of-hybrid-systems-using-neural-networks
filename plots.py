@@ -9,7 +9,7 @@ sns.relplot(
     data=df, kind="line",
     x="time", y="temp",
     palette='rocket', 
-    #hue='state', style="state", markers=True
+    #hue='state'style="state",markers=True
 )
 
 matplotlib.pyplot.show() 

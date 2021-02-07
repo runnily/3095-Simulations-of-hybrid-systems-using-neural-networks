@@ -48,7 +48,7 @@ class Automata:
                     self.current = self.lab[guard]
 
 
-    def run(self, y0, delta, noOfSimulations, filename):
+    def run(self, y0, delta, num_Simulations, filename):
         """
         run: The evolution of the state of the hybrid system over time. This run is achieved
              by performing the euler method
@@ -61,7 +61,7 @@ class Automata:
         y = y0
         x = 0
         text = ""
-        for _ in range(noOfSimulations):
+        for _ in range(num_Simulations):
             dydx = self.current.behaviour(y) # Get the change rate of change
             self.transitions(y) # To change the state if needed
             #print(x,y,dydx) 

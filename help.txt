@@ -1,0 +1,7 @@
+These are usefull links for programming my neural network
+
+https://seaborn.pydata.org/introduction.html
+https://www.youtube.com/watch?v=Jy4wM2X21u0
+https://towardsdatascience.com/forward-propagation-in-neural-networks-simplified-math-and-code-version-bbcfef6f9250
+https://www.youtube.com/watch?v=njKP3FqW3Sk&list=PLtBw6njQRU-rwp5__7C0oIVt26ZgjG9NI
+http://www.turingfinance.com/misconceptions-about-neural-networks/
