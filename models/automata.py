@@ -39,7 +39,8 @@ class Automata:
     def transitions(self, x):
         """
         transitions: This acts as a discerete event, where a guard condition is met we jump to the assiocated 
-                     state the guard is pointing to 
+                     state the guard is pointing to. When the discrete change modeled by x is possible and 
+                     what the possible updates of the variables are when the hybrid system makes the discrete change.
         Args:
             x (float): Reperesents the dynamic input
         """
@@ -48,7 +49,7 @@ class Automata:
                     self.current = self.lab[guard]
 
 
-    def run(self, y0, delta, num_Simulations, filename):
+    def run(self, y0, delta, num_simulations, filename):
         """
         run: The evolution of the state of the hybrid system over time. This run is achieved
              by performing the euler method
@@ -61,7 +62,7 @@ class Automata:
         y = y0
         x = 0
         text = ""
-        for _ in range(num_Simulations):
+        for _ in range(num_simulations):
             dydx = self.current.behaviour(y) # Get the change rate of change
             self.transitions(y) # To change the state if needed
             #print(x,y,dydx) 

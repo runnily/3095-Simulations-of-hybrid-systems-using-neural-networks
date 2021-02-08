@@ -25,8 +25,6 @@ class NN(nn.Module): # why it inherits  *
         x = self.fc3(x)
         return x
 
-
-
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
