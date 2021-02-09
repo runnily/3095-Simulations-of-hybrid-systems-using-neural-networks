@@ -12,6 +12,11 @@ def thermostat():
     thermostat = Automata(NO_HEATING, [HEATING, NO_HEATING], [lambda temp: temp < 19, lambda temp: temp >= 23]) 
     thermostat.run(15, 1, 10000, "Data/heating.csv")
 
+def newtons_cooling_law():
+    COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp-22))
+    Newtons = Automata(COOLING, [COOLING], [lambda temp: True])
+    Newtons.run(50, 1, 500, "Data/cooling.csv")
+
 if __name__ == "__main__":
-    thermostat()
+    newtons_cooling_law()
 

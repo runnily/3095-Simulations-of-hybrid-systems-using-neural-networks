@@ -69,7 +69,7 @@ class Automata:
             y += dydx*delta # update the change
             x += delta # delta
 
-        with open(filename, "r+") as file:
+        with open(filename, "a+") as file:
             writer = csv.DictWriter(file, fieldnames=["x", "y", "dy/dx", "state"])
             try: 
                 csv.Sniffer().has_header(file.read(2048))

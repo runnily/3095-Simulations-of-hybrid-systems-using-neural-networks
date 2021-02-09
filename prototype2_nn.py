@@ -3,7 +3,6 @@ import torch.nn as nn # all neural network modules (has linear, for feedforward,
 import torch.optim as optim
 import torch.nn.functional as F # all functions that dont have parameters (activation functions)
 from torch.utils.data import DataLoader # Easier data managements (mini batches)
-import torchvision.transforms as transforms # Transformation we can apply to dataset
 import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
 
@@ -33,15 +32,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Hyperparameters
 input_size = 1 # we want 1 
 num_classes = 1
-learning_rate = 0.0001
-batch_size = 100
-num_epochs = 200
+learning_rate = 0.001
+batch_size = 150
+num_epochs = 300
 
 # init network
-inputs = pd.read_csv("Data/heating.csv", usecols=[0])
+inputs = pd.read_csv("Data/cooling.csv", usecols=[0])
 inputs = torch.from_numpy(inputs.to_numpy(dtype='float32'))
 
-targets = pd.read_csv("Data/heating.csv", usecols=[1])
+targets = pd.read_csv("Data/cooling.csv", usecols=[1])
 targets = torch.from_numpy(targets.to_numpy(dtype='float32'))
 
 train_dataset = TensorDataset(inputs, targets)
@@ -88,4 +87,4 @@ def save(loader, model, filename):
     df = pd.DataFrame(data=preds, columns=['time'])
     df.to_csv(filename)
 
-save(train_loader, model, "data/preds/heating.csv")
+save(train_loader, model, "data/preds/cooling1.csv")

@@ -71,7 +71,7 @@ for epoch in range(num_epochs):
     for batch_idx, (data, targets) in enumerate(train_loader): # data is the images, targets is the correct image
         data = data.to(device=device) # torch.size(100, 2)
         targets = targets.to(device=device)
-    
+        
         #forward
         scores = model(data)
         loss = criterion(scores, targets)
