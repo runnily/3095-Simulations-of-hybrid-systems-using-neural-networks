@@ -66,7 +66,6 @@ def predicting_theromstat():
 
     preds = model(inputs).detach().numpy()
     save("data/preds/heating1.csv", preds)
-
 def predicting_theromstat_states():
     # varibles
     num_inputs = 1 # we want 1 
@@ -77,16 +76,17 @@ def predicting_theromstat_states():
 
 
     model = NN.prototype_classify(num_inputs, num_classes, learning_rate)
-
     # Get inputs from file
     filename = "data/heating.csv"
     inputs = pd.read_csv(filename, usecols=[1])
     inputs = from_numpy(inputs.to_numpy(dtype='float32')) # converts the numpy array into a tensor
     
     # Get outputs from file
-    le = pre.LabelEncoder()
     targets = pd.read_csv(filename, usecols=[3])
-    targets = le.fit_transform(targets.to_numpy(dtype="<U5"))
+
+    le = pre.LabelEncoder()
+    le.fit(["No he", "Heati"])
+    targets = le.transform(targets.to_numpy(dtype="<U5"))
     targets = from_numpy(targets)
 
     train_dataset = TensorDataset(inputs, targets)
@@ -102,5 +102,4 @@ def predicting_theromstat_states():
     save("data/preds/heating_states.csv", preds)
 
 if __name__ == "__main__": 
-    #predicting_cooling()
     predicting_theromstat_states()
