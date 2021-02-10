@@ -35,7 +35,7 @@ def predicting_cooling():
 
     train_dataset = TensorDataset(inputs, targets)
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
-    model.train(train_loader, num_epochs)
+    model.train_model(train_loader, num_epochs)
 
     preds = model(inputs).detach().numpy()
     save("data/preds/cooling1.csv", preds)
@@ -62,7 +62,7 @@ def predicting_theromstat():
 
     train_dataset = TensorDataset(inputs, targets)
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
-    model.train(train_loader, num_epochs)
+    model.train_model(train_loader, num_epochs)
 
     preds = model(inputs).detach().numpy()
     save("data/preds/heating1.csv", preds)
@@ -73,29 +73,34 @@ def predicting_theromstat_states():
     num_classes = 2
     learning_rate = 0.001
     batch_size = 100
-    num_epochs = 500
+    num_epochs = 50
 
 
     model = NN.prototype_classify(num_inputs, num_classes, learning_rate)
 
     # Get inputs from file
-    inputs = pd.read_csv("data/heating.csv", usecols=[0])
+    filename = "data/heating.csv"
+    inputs = pd.read_csv(filename, usecols=[1])
     inputs = from_numpy(inputs.to_numpy(dtype='float32')) # converts the numpy array into a tensor
     
     # Get outputs from file
     le = pre.LabelEncoder()
-    targets = pd.read_csv("Data/heating.csv", usecols=[3])
+    targets = pd.read_csv(filename, usecols=[3])
     targets = le.fit_transform(targets.to_numpy(dtype="<U5"))
     targets = from_numpy(targets)
 
     train_dataset = TensorDataset(inputs, targets)
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
-    model.train(train_loader, num_epochs)
 
-    preds = model(inputs).detach().numpy()
+    model.train_model(train_loader, num_epochs)
+
+    model.accuracy(train_loader)
+
+    _, preds = model(inputs).max(1)
+    preds = preds.detach().numpy()
+    le.inverse_transform(preds)
     save("data/preds/heating_states.csv", preds)
 
 if __name__ == "__main__": 
     #predicting_cooling()
     predicting_theromstat_states()
-

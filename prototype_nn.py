@@ -15,24 +15,24 @@ class prototype(nn.Module):
     """
         prototype:
             This is a neural network class. This will be used for predicting 
-            continous dynamics of a system.
+            continous dynamics of a system. This is a regression neural network.
 
         Attributes:
-            layer_0 (): The first layer within our neural networks
+            layer_0 (<class 'torch.nn.modules.linear.Linear'>): The first layer within our neural networks
                         it uses the activation function y= xA^T + b
                         where x=input A=weights, b=bias. 
-            layer_1 (): The second layer within our neural networks
+            layer_1 (<class 'torch.nn.modules.linear.Linear'>): The second layer within our neural networks
                         it uses the activation function y= xA^T + b
                         where x=input A=weights, b=bias. 
-            layer_2 (): The is the third layer within our neural network.
+            layer_2 (<class 'torch.nn.modules.linear.Linear'>): The is the third layer within our neural network.
                         This is also the last layer of our neural network.
                         This uses the activation function to predict the 
                         output
-            device (): Where the tensor caculations will be executed. Either
+            device (<class 'torch.device'>): Where the tensor caculations will be executed. Either
                        the CPU or a GPU. Where the user has a GPU, the neural 
                        network is caculated there. If not the CPU, is used 
                        instead.
-            learning_rate:  This is the learning rate we want our gradient descent to perform
+            learning_rate (float):  This is the learning rate we want our gradient descent to perform
     """
     def __init__(self, num_inputs, num_classes, learning_rate):
         """
@@ -46,6 +46,7 @@ class prototype(nn.Module):
         
         """
         super(prototype, self).__init__()
+        
         self.layer_0 = nn.Linear(num_inputs, 50)
         self.layer_1 = nn.Linear(50, 50)
         self.layer_2 = nn.Linear(50, num_classes)
@@ -61,10 +62,10 @@ class prototype(nn.Module):
             activation function and passes to the successive layer.
 
         Args:
-            inputs (): A tensor of inputs for the neural networks
+            inputs (<class 'torch.Tensor'>): A tensor of inputs for the neural networks
 
         Returns:
-            <>: A tensor of predictions provided by our neural network
+            (<class 'torch.Tensor'>): A tensor of predictions provided by our neural network
         """
         inputs = F.relu(self.layer_0(inputs))
         inputs = self.layer_1(inputs)
@@ -73,29 +74,47 @@ class prototype(nn.Module):
 
     def loss_function(self):
         """
-        loss_function:
-            This will is used to return the less function
-            <>: This will return the loss function. This function
+            loss_function:
+                This will is used to return the loss function
+
+            Returns:
+            (<class 'torch.nn.MSELoss>'): This will return the loss function. This function
                 is currently using nn.MSELoss()
         """
         return nn.MSELoss()
 
     def gradient(self):
+        """
+            gradient: 
+                This will return the gradient we are using
+            Returns:
+                () The gradient optimiser to use
+        """
         return optim.Adam(self.parameters(), lr=self.learning_rate)
 
     def feedforward(self, inputs):
+        """
+            feedforward: 
+                This is a function is used as a helper class. To translate the output
+                from the forward method into 1d vector. This is for the purpose as this 
+                regression neural network needs to be a single vector to perform
+                MSE loss
+
+            Returns: 
+                (<class 'torch.Tensor'>): Tensor of inputs as a 1d vector
+        """
         return self.forward(inputs).reshape(-1)
 
-    def train(self, training_batch_loader, num_epochs):
+    def train_model(self, training_batch_loader, num_epochs):
         """
-            train:
+            training:
                 This will be used to train our model, we first define our gradient
                 we are using. We loop through the number of epoch, within that loop
                 go through the number of batches, and get the inputs and targets outputs
                 for each batch. We then caculate the loss using our loss_function.
             
             Args:
-                training_batch (): This is the number of batches needed to train our
+                training_batch (<class 'torch.utils.data.dataloader.DataLoader'>): This is the number of batches needed to train our
                                     model
                 num_epochs (int): The number of cycles repeated through the full training dataset.
         """
@@ -126,19 +145,37 @@ class prototype(nn.Module):
 
 class prototype_classify(prototype):
     """
-        This class inherits all the properties from prototype, expect this time
-        we are going to use this class for classication problem instead.
+        prototype_classify: 
+            Extends prototype. This class is used as a classification neural network
     """
     def loss_function(self):
+        """
+            loss_function:
+                Overrides loss_function in the base class. This will is used to return the 
+                loss function. The loss function this is denoted as cross entropy loss
+
+            Returns:
+                (<class 'torch.nn.MSELoss>'): This will return the loss function. This function
+                is currently using nn.MSELoss()
+        """
         return nn.CrossEntropyLoss()
 
     def feedforward(self, inputs):
         return self.forward(inputs)
 
-    def accuracy(self, loader, model):
+    def accuracy(self, loader):
+        """
+            accuracy: 
+                This will return the accuracy of the classification problem. 
+            Args:
+                (loader): (<class 'torch.utils.data.dataloader.DataLoader'>): This is the number of batches needed to train our
+                                    model
+
+
+        """
         num_correct = 0
         num_samples = 0
-        model.eval()
+        self.eval()
     
         with torch.no_grad(): # checking thr accuracy we do dont compute the gradient in the cacluations
             for inputs, outputs in loader:
@@ -146,10 +183,10 @@ class prototype_classify(prototype):
                 outputs = outputs.to(device=self.device)
 
 
-                classify = model(outputs)
+                classify = self.forward(inputs)
                 _, preds = classify.max(1) # caculates the maximum of the 10 digits
                 num_correct += (preds == outputs).sum()
                 num_samples += preds.size(0)
 
         print(f"Got {num_correct} / {num_samples} with accuracy {float(num_correct)/float(num_samples)*100}")
-        model.train()
+        self.train()
