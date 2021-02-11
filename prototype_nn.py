@@ -170,9 +170,8 @@ class prototype_classify(prototype):
             Args:
                 (loader): (<class 'torch.utils.data.dataloader.DataLoader'>): This is the number of batches needed to train our
                                     model
-
-
         """
+        
         num_correct = 0
         num_samples = 0
         self.eval()

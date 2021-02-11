@@ -48,7 +48,7 @@ class Automata:
                     self.current = self.lab[guard]
 
 
-    def run(self, y0, delta, num_Simulations, filename):
+    def run(self, y0, delta, num_simulations, filename):
         """
         run: The evolution of the state of the hybrid system over time. This run is achieved
              by performing the euler method
@@ -61,20 +61,17 @@ class Automata:
         y = y0
         x = 0
         text = ""
-        for _ in range(num_Simulations):
+        for _ in range(num_simulations):
             dydx = self.current.behaviour(y) # Get the change rate of change
             self.transitions(y) # To change the state if needed
             #print(x,y,dydx) 
-            text += "{x},{y},{dydx},{state}\n".format(x=x, y=y,dydx=dydx, state=self.current.name)
+            text += '{x},{y},{dydx},"{state}"\n'.format(x=x, y=y,dydx=dydx, state=self.current.name)
             y += dydx*delta # update the change
             x += delta # delta
 
-        with open(filename, "a+") as file:
+        with open(filename, "w+") as file:
             writer = csv.DictWriter(file, fieldnames=["x", "y", "dy/dx", "state"])
-            try: 
-                csv.Sniffer().has_header(file.read(2048))
-            except:
-                writer.writeheader()
+            writer.writeheader()
             file.write(text)
             
             
