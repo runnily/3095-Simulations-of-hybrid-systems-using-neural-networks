@@ -1,10 +1,10 @@
 """
     Arthur: Adanna Obibuaku
-
     Purpose: This module is used to reperesent the models
 """
 from state import State
 from automata import Automata
+from van_automata import VanAutomata
 
 def thermostat():
     """
@@ -25,7 +25,16 @@ def newtons_cooling_law():
     newtons = Automata(COOLING, [COOLING], [lambda temp: True])
     newtons.run(50, 1, 500, "Data/cooling.csv")
 
+def van_der_pol_oscillator():
+    """
+        newtons_cooling_law:
+            This is used for reperesenting the newtons cooling law in our data
+    """
+    OSICILLATE = State("oscillate", lambda temp: True, lambda x: x*1 )
+    van = VanAutomata(OSICILLATE, [OSICILLATE], [lambda temp: True])
+    van.run(1, 1, 10, 500)
+
 if __name__ == "__main__":
     #newtons_cooling_law()
-    thermostat()
+    van_der_pol_oscillator()
 

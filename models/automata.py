@@ -47,6 +47,11 @@ class Automata:
             if guard(x) and self.lab[guard].invariant(x):
                     self.current = self.lab[guard]
 
+    def save(self, text, fieldnames, filename):
+        with open(filename, "w+") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            file.write(text)
 
     def run(self, y0, delta, num_simulations, filename):
         """

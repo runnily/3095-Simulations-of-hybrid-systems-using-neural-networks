@@ -119,7 +119,3 @@ def predicting_theromstat_states():
     le.inverse_transform(preds)
     save("data/preds/heating_states.csv", {'temp' : inputs.numpy().flatten(), 'state' : preds}, ["temp", "state"])
 
-if __name__ == "__main__": 
-    #predicting_cooling()
-    #predicting_theromstat()
-    predicting_theromstat_states()
