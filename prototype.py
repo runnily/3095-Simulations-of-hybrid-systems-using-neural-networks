@@ -21,21 +21,28 @@ def predicting_cooling():
             law. It will print out the data. Then save it's predictions to a graph
     """
     # varibles
-    num_inputs = 1 # we want 1 
+    num_inputs = 3 # we want 3 inputs (enviroment temp, inital temp and time). This would helps us predict
     num_classes = 1
-    learning_rate = 0.01
-    batch_size = 20
-    num_epochs = 300
+    learning_rate = 0.001
+    batch_size = 50
+    num_epochs = 30
 
 
     model = NN.prototype(num_inputs, num_classes, learning_rate)
 
     # Get our inputs from file
-    inputs = pd.read_csv("data/cooling.csv", usecols=[0])
+    filename = "data/cooling.csv"
+
+    inputs = pd.read_csv(filename, usecols=[0,1,2])
+
+    init_temp = pd.read_csv(filename, usecols=[0])
+    env_temp = pd.read_csv(filename, usecols=[1])
+    time_temp = pd.read_csv(filename, usecols=[2])
+
     inputs = from_numpy(inputs.to_numpy(dtype='float32')) # converts the numpy array into a tensor
     
     # Get our outputs from file
-    targets = pd.read_csv("data/cooling.csv", usecols=[1])
+    targets = pd.read_csv(filename, usecols=[3])
     targets = from_numpy(targets.to_numpy(dtype='float32')) # converts the numpy array into a tensor
 
     train_dataset = TensorDataset(inputs, targets)
@@ -43,7 +50,7 @@ def predicting_cooling():
     model.train_model(train_loader, num_epochs)
 
     preds = model(inputs).detach().numpy().flatten()
-    save("data/preds/cooling.csv", {'time' : inputs.numpy().flatten(), 'temp' : preds}, ["time", "temp"])
+    save("data/preds/cooling.csv", {'initial_temp' : init_temp.values.flatten(), 'env_temp' : env_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "env_temp", "time", "temp"])
 
 def predicting_theromstat():
     """
@@ -119,3 +126,5 @@ def predicting_theromstat_states():
     le.inverse_transform(preds)
     save("data/preds/heating_states.csv", {'temp' : inputs.numpy().flatten(), 'state' : preds}, ["temp", "state"])
 
+if __name__ == "__main__":
+    predicting_cooling()

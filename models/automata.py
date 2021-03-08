@@ -17,7 +17,7 @@ class Automata:
                              a specfific state it jumps to.
     """
 
-    def __init__(self, current, states, guards):
+    def __init__(self, current, states, guards, x_0 = None, x_env = None):
         """
         __init__: This is used to inilise the hybrid automaton object
 
@@ -25,11 +25,16 @@ class Automata:
             current (<class 'state.State'>): This reperesent the current state of the hybrid automaton
             states (<class 'list'>): This reperesents a list of states used within the hybrid automaton
             guards (<class 'list'>): This reperesent a list of guards used with the hybrid automaton
+            x_0 (int): This reperesents the initial x 
+            x_env (int): This repersents the enviroment x if included.
 
         """
         self.states = states
         self.guards = guards
         self.current = current
+
+        self.x_0 = x_0
+        self.x_env = x_env
 
         self.lab = {}
         for i in range(len(guards)):
@@ -48,9 +53,10 @@ class Automata:
                     self.current = self.lab[guard]
 
     def save(self, text, fieldnames, filename):
-        with open(filename, "w+") as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
+        with open(filename, "a+") as file:
+            if file.tell() == 0:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
             file.write(text)
 
     def run(self, y0, delta, num_simulations, filename):
@@ -66,18 +72,29 @@ class Automata:
         y = y0
         x = 0
         text = ""
+        fieldnames = None
+
         for _ in range(num_simulations):
             dydx = self.current.behaviour(y) # Get the change rate of change
             self.transitions(y) # To change the state if needed
-            #print(x,y,dydx) 
-            text += '{x},{y},{dydx},"{state}"\n'.format(x=x, y=y,dydx=dydx, state=self.current.name)
+            
+            if (self.x_0 == None) and (self.x_env == None):
+                text += '{x},{y},{dydx},"{state}"\n'.format(x=x, y=y,dydx=dydx, state=self.current.name)
+                fieldnames = ["x", "y", "dy/dx", "state"]
+            elif (self.x_0 != None) and (self.x_env == None):
+                text += '{x_0},{x},{y},{dydx},"{state}"\n'.format(x_0 = self.x_0, x=x, y=y,dydx=dydx, state=self.current.name)
+                fieldnames = ["x_0", "x", "y", "dy/dx", "state"]
+            elif (self.x_0 == None) and (self.x_env != None):
+                text += '{x_env},{x},{y},{dydx},"{state}"\n'.format(x_env = self.x_env, x=x, y=y,dydx=dydx, state=self.current.name)
+                fieldnames = ["x_env", "x", "y", "dy/dx", "state"]
+            else:
+                text += '{x_0},{x_env},{x},{y},{dydx},"{state}"\n'.format(x_0 = self.x_0, x_env = self.x_env, x=x, y=y,dydx=dydx, state=self.current.name)
+                fieldnames = ["x_0", "x_env", "x", "y", "dy/dx", "state"]
+
             y += dydx*delta # update the change
             x += delta # delta
 
-        with open(filename, "w+") as file:
-            writer = csv.DictWriter(file, fieldnames=["x", "y", "dy/dx", "state"])
-            writer.writeheader()
-            file.write(text)
+        self.save(text, fieldnames, filename)
             
             
 

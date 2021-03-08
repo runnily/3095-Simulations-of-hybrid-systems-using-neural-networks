@@ -156,7 +156,7 @@ class prototype_classify(prototype):
 
             Returns:
                 (<class 'torch.nn.MSELoss>'): This will return the loss function. This function
-                is currently using nn.MSELoss()
+                is currently using cross entropy loss.
         """
         return nn.CrossEntropyLoss()
 
