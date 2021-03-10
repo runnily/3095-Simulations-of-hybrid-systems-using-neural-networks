@@ -144,7 +144,7 @@ def predicting_newtons_cooling_law():
     """
     filename = "data/train/newtons_cooling_law.csv"
     inputs = inputs_to_tensor(filename, [0,1])
-    targets = inputs_to_tensor(filename, [3])
+    targets = inputs_to_tensor(filename, [2])
 
     preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
     init_temp = pd.read_csv(filename, usecols=[0])
@@ -153,8 +153,4 @@ def predicting_newtons_cooling_law():
     save("data/preds/train/newtons_cooling_law.csv", {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
 
 if __name__ == "__main__":
-    predicting_simple_model_x0()
-    predicting_simple_model_x1()
-    predicting_simple_model_y2()
-    predicting_simple_model_x1y2()
     predicting_newtons_cooling_law()

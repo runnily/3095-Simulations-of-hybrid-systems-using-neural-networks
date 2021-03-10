@@ -73,9 +73,9 @@ def simple_model_x0(test):
     MODEL = State("None", lambda n: True, lambda x: 0)
     simple_automata = Automata(MODEL, [MODEL], [lambda n: True])
     if test:
-        simple_automata.run(1, 1, 200, "../data/train/simple_model_x0.csv")
+        simple_automata.run(1, 1, 1000, "../data/train/simple_model_x0.csv")
     else:
-        simple_automata.run(1, 1, 100, "../data/test/simple_model_x0.csv", 200)
+        simple_automata.run(1, 1, 100, "../data/test/simple_model_x0.csv", 1000)
    
 
 
@@ -101,5 +101,4 @@ def simple_model_x1y2(test):
 
 
 if __name__ == "__main__":
-    newtons_cooling_law(test=True)
-    newtons_cooling_law(test=False)
+    simple_model_x0(test=True)
