@@ -80,7 +80,7 @@ def inputs_to_tensor(filename, columns):
     data = from_numpy(data.to_numpy(dtype='float32')) # converts the numpy array into a tensor
     return data
 
-def predicting_simple_model_0():
+def predicting_simple_model_x0():
     """
         This is the first models that I will be using in my neural network. This is to used to check
         the main functionailty of the neural network is working correctly. Essentially our model is
@@ -88,12 +88,12 @@ def predicting_simple_model_0():
     """
 
     # Get inputs and targets from file 
-    filename = "data/very_simple_model.csv"
+    filename = "data/train/simple_model_x0.csv"
     inputs = inputs_to_tensor(filename, [0])
     targets = inputs_to_tensor(filename, [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.1, batch_size=25, num_epochs=200, inputs=inputs, targets=targets, train=True, path="simple_model_0.pth" )
-    save("data/preds/very_simple_model.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
+    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.1, batch_size=25, num_epochs=200, inputs=inputs, targets=targets, train=True, path="simple_model_x0.pth" )
+    save("data/preds/train/simple_model_x0.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_simple_model_x1():
     """
@@ -102,12 +102,12 @@ def predicting_simple_model_x1():
         put into the neural network.
     """
     # Get inputs and targets from file 
-    filename = "data/simple_model_x1.csv"
+    filename = "data/train/simple_model_x1.csv"
     inputs = inputs_to_tensor(filename, [0])
     targets = inputs_to_tensor(filename, [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_1.pth" )
-    save("data/preds/simple_model_x1.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
+    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_x1.pth" )
+    save("data/preds/train/simple_model_x1.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_simple_model_y2():
     """
@@ -117,12 +117,12 @@ def predicting_simple_model_y2():
     """
 
     # Get inputs and targets from file 
-    filename = "data/simple_model_y2.csv"
+    filename = "data/train/simple_model_y2.csv"
     inputs = inputs_to_tensor(filename, [0])
     targets = inputs_to_tensor(filename, [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_2.pth" )
-    save("data/preds/simple_model_x1y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
+    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_y2.pth" )
+    save("data/preds/train/simple_model_y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_simple_model_x1y2():
     """
@@ -131,27 +131,30 @@ def predicting_simple_model_x1y2():
     """
 
     # Get inputs and targets from file 
-    inputs = inputs_to_tensor("data/simple_model_x1.csv", [0])
-    targets = inputs_to_tensor("data/simple_model_y2.csv", [1])
+    inputs = inputs_to_tensor("data/train/simple_model_x1.csv", [0])
+    targets = inputs_to_tensor("data/train/simple_model_y2.csv", [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=50, num_epochs=5000, inputs=inputs, targets=targets, train=True, path="simple_model_1&2.pth" )
-    save("data/preds/simple_model_x1y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
+    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=50, num_epochs=5000, inputs=inputs, targets=targets, train=True, path="simple_model_x1y2.pth" )
+    save("data/preds/train/simple_model_x1y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_newtons_cooling_law():
     """
         predicting_cooling:
             This will be used uses the neural network to simulate the dynamics of newtons cooling laws.
     """
-    filename = "data/newtons_cooling_law.csv"
+    filename = "data/train/newtons_cooling_law.csv"
     inputs = inputs_to_tensor(filename, [0,1])
     targets = inputs_to_tensor(filename, [3])
 
-    preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="cooling.pth")
+    preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
     init_temp = pd.read_csv(filename, usecols=[0])
     time_temp = pd.read_csv(filename, usecols=[1])
 
-    save("data/preds/newtons_cooling_law.csv", {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
-
+    save("data/preds/train/newtons_cooling_law.csv", {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
 
 if __name__ == "__main__":
+    predicting_simple_model_x0()
+    predicting_simple_model_x1()
+    predicting_simple_model_y2()
+    predicting_simple_model_x1y2()
     predicting_newtons_cooling_law()

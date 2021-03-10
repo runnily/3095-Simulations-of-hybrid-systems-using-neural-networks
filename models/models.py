@@ -30,7 +30,7 @@ def newtons_cooling_law(test):
         for t_0 in initial_temp:
             COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
             newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
-            newtons.run(t_0, DELTA, SIMULATIONS, "../data/newtons_cooling_law.csv")
+            newtons.run(t_0, DELTA, SIMULATIONS, "../data/train/newtons_cooling_law.csv")
     else:
         # This will produce test data from tempreture ranging 61-100, starting t(0) = initial = temp
         initial_temp = [i for i in range(61, 101)]
@@ -46,7 +46,7 @@ def newtons_cooling_law(test):
         for t_0 in initial_temp:
             COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
             newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
-            df = pd.read_csv("../data/newtons_cooling_law.csv", usecols=[0,1,2])
+            df = pd.read_csv("../data/train/newtons_cooling_law.csv", usecols=[0,1,2])
             df = pd.DataFrame(data=df)
             #df[df.x_0 == t_0][df.x == 199].y.item()
 
@@ -65,21 +65,21 @@ def van_der_pol_oscillator():
     van = VanAutomata(OSICILLATE, [OSICILLATE], [lambda temp: True])
     van.run(1, 1, 0.1, 25)
 
-def simple_model_x0(train):
+def simple_model_x0(test):
     """
         This is a very simple model to test the neural network and 
         see wether it performs correctly
     """
     MODEL = State("None", lambda n: True, lambda x: 0)
     simple_automata = Automata(MODEL, [MODEL], [lambda n: True])
-    if train:
-        simple_automata.run(1, 1, 200, "../data/simple_model_x0.csv")
+    if test:
+        simple_automata.run(1, 1, 200, "../data/train/simple_model_x0.csv")
     else:
-        simple_automata.run(1, 1, 100, "../data/test/very_simple_model_x0csv", 200)
+        simple_automata.run(1, 1, 100, "../data/test/simple_model_x0.csv", 200)
    
 
 
-def simple_model_x1y2(train):
+def simple_model_x1y2(test):
     """
         simple_model:
             This is a simple models to test the neural network
@@ -90,15 +90,16 @@ def simple_model_x1y2(train):
     MODEL_2 = State("None", lambda n: True, lambda y: 2)
     simple_automata_2 = Automata(MODEL_2, [MODEL_2], [lambda n: True])
 
-    if train:
-        simple_automata_1.run(0, 1, 2000, "../data/simple_model_x1y2.csv")
+    if test:
+        simple_automata_1.run(0, 1, 2000, "../data/train/simple_model_x1.csv")
 
-        simple_automata_2.run(0, 1, 2000, "../data/simple_model_x1y2.csv")
+        simple_automata_2.run(0, 1, 2000, "../data/train/simple_model_y2.csv")
     else:
-        simple_automata_1.run(2000, 1, 100, "../data/test/simple_model_x1y2.csv", 2000)
+        simple_automata_1.run(2000, 1, 100, "../data/test/simple_model_x1.csv", 2000)
 
-        simple_automata_2.run(4000, 1, 100, "../data/test/simple_model_x1y2.csv",2000)
+        simple_automata_2.run(4000, 1, 100, "../data/test/simple_model_y2.csv",2000)
 
 
 if __name__ == "__main__":
-    very_simple_model(False)
+    newtons_cooling_law(test=True)
+    newtons_cooling_law(test=False)
