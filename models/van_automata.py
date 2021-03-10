@@ -34,9 +34,9 @@ class VanAutomata(Automata):
             time += delta
             time = round(time,1)
 
-            self.save(x_data, ['time', 'x', 'dxdtime'], 'data/oscillate/x_data.csv')
-            self.save(y_data, ['time', 'y', 'dydtime'], 'data/oscillate/y_data.csv')
-            self.save(oscillate, ['time', 'x', 'y'], 'data/oscillate/oscillate.csv')
+        self.save(x_data, ['time', 'x', 'dxdtime'], 'data/oscillate/x_data.csv')
+        self.save(y_data, ['time', 'y', 'dydtime'], 'data/oscillate/y_data.csv')
+        self.save(oscillate, ['time', 'x', 'y'], 'data/oscillate/oscillate.csv')
 
 
 

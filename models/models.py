@@ -5,6 +5,8 @@
 from state import State
 from automata import Automata
 from van_automata import VanAutomata
+import pandas as pd
+
 
 def thermostat():
     """
@@ -16,21 +18,43 @@ def thermostat():
     thermostat = Automata(NO_HEATING, [HEATING, NO_HEATING], [lambda temp: temp < 19, lambda temp: temp >= 23]) 
     thermostat.run(15, 1, 10000, "Data/thermostat.csv")
 
-def newtons_cooling_law():
+def newtons_cooling_law(test):
     """
         newtons_cooling_law:
             This is used for reperesenting the newtons cooling law in our data
     """
-
-    initial_temp = [i for i in range(1, 61)]
-    env_temp = [i for i in range(1, 61)]
     DELTA = 1
     SIMULATIONS = 200
-    for t_0 in initial_temp:
-        for t_env in env_temp:
-            COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - t_env ))
-            newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0, t_env)
-            newtons.run(t_0, DELTA, SIMULATIONS, "data/cooling.csv")
+    if test:
+        initial_temp = [i for i in range(1, 61)]
+        for t_0 in initial_temp:
+            COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
+            newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
+            newtons.run(t_0, DELTA, SIMULATIONS, "../data/newtons_cooling_law.csv")
+    else:
+        # This will produce test data from tempreture ranging 61-100, starting t(0) = initial = temp
+        initial_temp = [i for i in range(61, 101)]
+        for t_0 in initial_temp:
+            COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
+            newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
+            newtons.run(t_0, DELTA, SIMULATIONS, "../data/test/newtons_cooling_law.csv")
+    
+        # This will produce carrying on from the simulations from the training set. 
+        # It will carry on from where each simulation for a inital temp stopped at (199).
+        # And carry on getting the rest of the simulation
+        initial_temp = [i for i in range(1, 10)]
+        for t_0 in initial_temp:
+            COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
+            newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
+            df = pd.read_csv("../data/newtons_cooling_law.csv", usecols=[0,1,2])
+            df = pd.DataFrame(data=df)
+            #df[df.x_0 == t_0][df.x == 199].y.item()
+
+            # Gets value from training set. This is to carry on from the simulations for the training set.
+            data = df.query("x_0 == {} & x == {}".format(t_0, 199)).y.item() 
+            newtons.run(data, DELTA, SIMULATIONS+1, "../data/test/newtons_cooling_law.csv", 199)
+
+        
 
 def van_der_pol_oscillator():
     """
@@ -39,37 +63,42 @@ def van_der_pol_oscillator():
     """
     OSICILLATE = State("oscillate", lambda temp: True, lambda x: x*1 )
     van = VanAutomata(OSICILLATE, [OSICILLATE], [lambda temp: True])
-    van.run(1, 1, 10, 500)
+    van.run(1, 1, 0.1, 25)
 
-def very_simple_model():
+def simple_model_x0(train):
     """
         This is a very simple model to test the neural network and 
         see wether it performs correctly
     """
-
     MODEL = State("None", lambda n: True, lambda x: 0)
     simple_automata = Automata(MODEL, [MODEL], [lambda n: True])
-    simple_automata.run(1, 1, 200, "data/very_simple_model.csv")
+    if train:
+        simple_automata.run(1, 1, 200, "../data/simple_model_x0.csv")
+    else:
+        simple_automata.run(1, 1, 100, "../data/test/very_simple_model_x0csv", 200)
+   
 
 
-def simple_model():
+def simple_model_x1y2(train):
     """
         simple_model:
             This is a simple models to test the neural network
     """
     MODEL_1 = State("None", lambda n: True, lambda x: 1)
+    simple_automata_1 = Automata(MODEL_1, [MODEL_1], [lambda n: True])
+
     MODEL_2 = State("None", lambda n: True, lambda y: 2)
+    simple_automata_2 = Automata(MODEL_2, [MODEL_2], [lambda n: True])
 
-    simple_automata = Automata(MODEL_1, [MODEL_1], [lambda n: True])
-    simple_automata.run(0, 1, 200, "data/simple_model_1.csv")
+    if train:
+        simple_automata_1.run(0, 1, 2000, "../data/simple_model_x1y2.csv")
 
-    simple_automata = Automata(MODEL_2, [MODEL_2], [lambda n: True])
-    simple_automata.run(0, 1, 200, "data/simple_model_2.csv")
+        simple_automata_2.run(0, 1, 2000, "../data/simple_model_x1y2.csv")
+    else:
+        simple_automata_1.run(2000, 1, 100, "../data/test/simple_model_x1y2.csv", 2000)
+
+        simple_automata_2.run(4000, 1, 100, "../data/test/simple_model_x1y2.csv",2000)
 
 
 if __name__ == "__main__":
-    simple_model()
-    very_simple_model()
-    #newtons_cooling_law()
-    #van_der_pol_oscillator()
-
+    very_simple_model(False)

@@ -59,7 +59,7 @@ class Automata:
                 writer.writeheader()
             file.write(text)
 
-    def run(self, y0, delta, num_simulations, filename):
+    def run(self, y0, delta, num_simulations, filename, x=None):
         """
         run: The evolution of the state of the hybrid system over time. This run is achieved
              by performing the euler method
@@ -70,7 +70,8 @@ class Automata:
             noOfSimulations (int): How many numertical simulations we want
         """
         y = y0
-        x = 0
+        if x == None:
+            x = 0
         text = ""
         fieldnames = None
 
