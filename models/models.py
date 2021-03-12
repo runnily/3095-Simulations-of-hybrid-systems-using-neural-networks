@@ -4,7 +4,7 @@
 """
 from state import State
 from automata import Automata
-from van_automata import AutomataSys
+from automata_sys import AutomataSys
 import pandas as pd
 
 

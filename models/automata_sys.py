@@ -23,13 +23,17 @@ class AutomataSys(Automata):
         """
         pass
 
-    def run(self, initial_var, delta, num_simulations):
-        text = ''
-        time = 0
-
-        # Will hold all variables in the contious systems and the current value
+    def variables_of_systems(self, initial_var):
+        """
+            variables_of_systems:
+                This is used to generate a dictionary of all variables within the continous system
+                to correspond to its initial value, which is stored in initial_var
+            Args:
+                initial_var (<class 'list'>): This is a list of all variables within the system
+            Returns:
+                (<class 'dict'>) : A dictionary of all variables keys corresponding to the initial value
+        """
         values = {}
-
         if len(initial_var) != len(self.rate_of_change):
             raise IndentationError("Length of inital_var must be the same as length of rate of change")
         else:
@@ -42,6 +46,23 @@ class AutomataSys(Automata):
                 # This would be then used as a key for the values
                 # This is first stored as initial_var
                 values[key[1]] = initial_var[i] 
+        return values
+
+    def run(self, initial_var, delta, num_simulations):
+        """
+            run:
+                This is to run the euler method on a set of behaviours in an hybrid automata
+                which is defined with a systems of behaviours.
+            Args:
+                initial_var (<class 'list'>): This is a list of all variables within the system
+                delta (int): This is a the time step to take
+                num_simulations: This is the number of simulations that should be made
+        """
+        text = ''
+        time = 0
+        # Will hold all variables in the contious systems and the current value
+
+        values = self.variables_of_systems(initial_var) 
         
         for _ in range(num_simulations):
             text += "{time},".format(time=round(time,1))
@@ -62,11 +83,12 @@ class AutomataSys(Automata):
                 # And add it the directory inputs
                 # which is then passed to the behaviour
 
-
                 for argument in func_arguments:
                     func_inputs[argument] = values[argument]
                 
                 rate_change = behaviour(**func_inputs)
+
+                # wether to add comma or not
                 if (list(list_keys)[-1] != key):
                     text += "{rate_change},".format(rate_change=rate_change) 
                 else:
@@ -78,8 +100,9 @@ class AutomataSys(Automata):
             
             text += "\n"
             time += delta
-        print(text)
+
         fieldnames = ['t'] + list(values.keys()) + list(self.rate_of_change.keys())
+        print(text)
         self.save(text, fieldnames, '../data/train/van.csv')
 
 
