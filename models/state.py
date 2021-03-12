@@ -23,4 +23,3 @@ class State:
         self.invariant = invariant
         self.behaviour = behaviour
     
-    

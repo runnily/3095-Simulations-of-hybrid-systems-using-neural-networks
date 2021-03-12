@@ -4,7 +4,7 @@
 """
 from state import State
 from automata import Automata
-from van_automata import VanAutomata
+from van_automata import AutomataSys
 import pandas as pd
 
 
@@ -61,9 +61,9 @@ def van_der_pol_oscillator():
         newtons_cooling_law:
             This is used for reperesenting the newtons cooling law in our data
     """
-    OSICILLATE = State("oscillate", lambda temp: True, lambda x: x*1 )
-    van = VanAutomata(OSICILLATE, [OSICILLATE], [lambda temp: True])
-    van.run(1, 1, 0.1, 25)
+    OSICILLATE = State("oscillate", lambda temp: True, [lambda y: y, lambda x, y: 0.5*(1 - x*x)*y-x])
+    van = AutomataSys(OSICILLATE, [OSICILLATE], [lambda temp: True])
+    van.run([1,1], 0.1, 1000)
 
 def simple_model_x0(test):
     """
@@ -101,4 +101,4 @@ def simple_model_x1y2(test):
 
 
 if __name__ == "__main__":
-    simple_model_x0(test=True)
+    van_der_pol_oscillator()
