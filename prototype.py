@@ -157,11 +157,11 @@ def predicting_van_der_pol():
         predicting_van_der_pol:
             This will be used uses the neural network to simulate the dynamics of newtons cooling laws.
     """
-    filename = "data/train/newtons_cooling_law.csv"
-    inputs = inputs_to_tensor(filename, [0,1])
+    filename = "data/train/van.csv"
+    inputs = inputs_to_tensor(filename, [0,1,2])
     targets = inputs_to_tensor(filename, [2])
 
-    preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
+    preds = predictions(num_inputs=3, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
     init_temp = pd.read_csv(filename, usecols=[0])
     time_temp = pd.read_csv(filename, usecols=[1])
 

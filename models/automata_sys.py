@@ -10,7 +10,7 @@ class AutomataSys(Automata):
         super(AutomataSys, self).__init__(current, states, guards, x_0 = None, x_env = None)
 
         # This will but all behaviours in a list
-        self.rate_of_change_id = ['dx/dtime', 'dy/dtime', 'dz/dtime', 'dw/dtime']
+        self.rate_of_change_id = ['dx/dtime', 'dy/dtime', 'dz/dtime', 'dw/dtime', 'dp/dtime', 'dq/time','dm/time']
         self.rate_of_change = {}
 
         # Assignes each behaviours to an corresponding id
@@ -31,9 +31,11 @@ class AutomataSys(Automata):
             Args:
                 initial_var (<class 'list'>): This is a list of all variables within the system
             Returns:
-                (<class 'dict'>) : A dictionary of all variables keys corresponding to the initial value
+                (<class 'dict'>) : A dictionary of all variables keys corresponding to the current value
+                (<class 'dict'>) : A dictionary of all variables keys corresponding to the initial value (should remain the same)
         """
         values = {}
+        initial_var_dict = {}
         if len(initial_var) != len(self.rate_of_change):
             raise IndentationError("Length of inital_var must be the same as length of rate of change")
         else:
@@ -46,31 +48,36 @@ class AutomataSys(Automata):
                 # This would be then used as a key for the values
                 # This is first stored as initial_var
                 values[key[1]] = initial_var[i] 
-        return values
+                initial_var_dict["initial_"+key[1]] = initial_var[i] 
+        return values, initial_var_dict
 
-    def run(self, initial_var, delta, num_simulations):
+    def run(self, initial_var, delta, num_simulations, filename):
         """
             run:
                 This is to run the euler method on a set of behaviours in an hybrid automata
                 which is defined with a systems of behaviours.
             Args:
                 initial_var (<class 'list'>): This is a list of all variables within the system
-                delta (int): This is a the time step to take
+                delta (int): This is a the time step to take. This initial variables should
+                correspond to the differinal equations.
                 num_simulations: This is the number of simulations that should be made
         """
         text = ''
         time = 0
-        # Will hold all variables in the contious systems and the current value
 
-        values = self.variables_of_systems(initial_var) 
+        # Will hold all variables in the contious systems and the current value
+        values, initial_var_dict = self.variables_of_systems(initial_var) 
+        initial_var_str = (' '.join(str(e) for e in initial_var_dict.values())).replace(" ",",")
         
         for _ in range(num_simulations):
-            text += "{time},".format(time=round(time,1))
+          
+            text += "{time},{initial_var_str},".format(time=round(time,1), initial_var_str=initial_var_str)
             update_values = {}
 
             for key, value in values.items():
                 # For printing every value in the data
-                text += "{key},".format(key=value) 
+                text += "{value},".format(value=value) 
+            
             
             list_keys = self.rate_of_change.keys()
             for key, behaviour in self.rate_of_change.items():
@@ -101,9 +108,9 @@ class AutomataSys(Automata):
             text += "\n"
             time += delta
 
-        fieldnames = ['t'] + list(values.keys()) + list(self.rate_of_change.keys())
+        fieldnames = ['t'] + list(initial_var_dict.keys()) + list(values.keys()) + list(self.rate_of_change.keys())
         print(text)
-        self.save(text, fieldnames, '../data/train/van.csv')
+        self.save(text, fieldnames, filename)
 
 
 
