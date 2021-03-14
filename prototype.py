@@ -155,17 +155,22 @@ def predicting_newtons_cooling_law():
 def predicting_van_der_pol():
     """
         predicting_van_der_pol:
-            This will be used uses the neural network to simulate the dynamics of newtons cooling laws.
+            This will be used uses the neural network to simulate the dynamics of the van
+            der pol method
     """
     filename = "data/train/van.csv"
     inputs = inputs_to_tensor(filename, [0,1,2])
-    targets = inputs_to_tensor(filename, [2])
+    targets_x = inputs_to_tensor(filename, [3])
+    targets_y = inputs_to_tensor(filename, [4])
 
-    preds = predictions(num_inputs=3, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
-    init_temp = pd.read_csv(filename, usecols=[0])
-    time_temp = pd.read_csv(filename, usecols=[1])
+    preds_x = predictions(num_inputs=3, num_classes=1, learning_rate=0.00000000000001, batch_size=100, num_epochs=200, inputs=inputs, targets=targets_x, train=True, path="van_der_pol/vans_x.pth")
+    preds_y = predictions(num_inputs=3, num_classes=1, learning_rate=0.00000000000001, batch_size=100, num_epochs=200, inputs=inputs, targets=targets_y, train=True, path="van_der_pol/vans_y.pth")
 
-    save("data/preds/train/newtons_cooling_law.csv", {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
+    time = pd.read_csv(filename, usecols=[0])
+    init_x = pd.read_csv(filename, usecols=[1])
+    init_y = pd.read_csv(filename, usecols=[2])
+
+    save("data/preds/train/van.csv", {'time' : time.values.flatten(), 'initial_x' : init_x.values.flatten(), 'initial_y' : init_y.values.flatten(), 'x' : preds_x, 'y' : preds_y }, ["time", "initial_x", "initial_y", "x", "y"])
 
 if __name__ == "__main__":
-    predicting_newtons_cooling_law()
+    predicting_van_der_pol()
