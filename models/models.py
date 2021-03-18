@@ -33,7 +33,7 @@ def newtons_cooling_law(test):
             newtons.run(t_0, DELTA, SIMULATIONS, "../data/train/newtons_cooling_law.csv")
     else:
         # This will produce test data from tempreture ranging 61-100, starting t(0) = initial = temp
-        initial_temp = [i for i in range(61, 101)]
+        initial_temp = [i for i in range(61, 90)]
         for t_0 in initial_temp:
             COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
             newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
@@ -89,17 +89,25 @@ def simple_model_x1y2(test):
 
         simple_automata_2.run(4000, 1, 100, "../data/test/simple_model_y2.csv",2000)
 
-def van_der_pol_oscillator():
+def van_der_pol_oscillator(train):
     """
         newtons_cooling_law:
             This is used for reperesenting the newtons cooling law in our data
     """
     OSICILLATE = State("oscillate", lambda temp: True, [lambda y: y, lambda x, y: 0.5*(1 - x*x)*y-x])
     van = AutomataSys(OSICILLATE, [OSICILLATE], [lambda temp: True])
+    
 
-    for init_x in range(1,5):
-        for init_y in range(1,5):
-            van.run([init_x,init_y], 0.1, 500, '../data/train/van.csv')
+    if train:
+        for init_x in range(1,5):
+            for init_y in range(1,5):
+                van.run([init_x,init_y], 0.1, 2000, '../data/train/van.csv')
+    else:
+        for init_x in range(5,7):
+            for init_y in range(5,7):
+                van.run([init_x,init_y], 0.1, 1000, '../data/train/van.csv')
+
+        
 
 def coupled_van_der_pol():
     """
@@ -113,7 +121,7 @@ def coupled_van_der_pol():
         for init_y in range(1,5):
             for init_z in range(1,5):
                 for init_w in range(1,5):
-                    van.run([init_x,init_y,init_z,init_w], 0.1, 500, '../data/train/coupled_van.csv')
+                    van.run([init_x,init_y,init_z,init_w], 0.1, 1000, '../data/train/coupled_van.csv')
 
 
 def laub_loomis():
@@ -146,4 +154,4 @@ def laub_loomis():
 
 
 if __name__ == "__main__":
-    laub_loomis()
+    van_der_pol_oscillator(True)

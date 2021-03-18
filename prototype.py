@@ -137,20 +137,27 @@ def predicting_simple_model_x1y2():
     preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=50, num_epochs=5000, inputs=inputs, targets=targets, train=True, path="simple_model_x1y2.pth" )
     save("data/preds/train/simple_model_x1y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
-def predicting_newtons_cooling_law():
+def predicting_newtons_cooling_law(filename, train):
     """
         predicting_cooling:
             This will be used uses the neural network to simulate the dynamics of newtons cooling laws.
     """
-    filename = "data/train/newtons_cooling_law.csv"
     inputs = inputs_to_tensor(filename, [0,1])
     targets = inputs_to_tensor(filename, [2])
 
-    preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=200, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
+    if train:
+        preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=1000, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
+        savefile = "data/preds/train/newtons_cooling_law.csv"
+    else:
+        preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=600, inputs=inputs, targets=targets, train=False, path="newtons_cooling_law.pth")
+        savefile = "data/preds/test/newtons_cooling_law.csv"
+
     init_temp = pd.read_csv(filename, usecols=[0])
     time_temp = pd.read_csv(filename, usecols=[1])
 
-    save("data/preds/train/newtons_cooling_law.csv", {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
+    
+    save(savefile, {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
+    return savefile
 
 def predicting_van_der_pol():
     """
@@ -163,8 +170,8 @@ def predicting_van_der_pol():
     targets_x = inputs_to_tensor(filename, [3])
     targets_y = inputs_to_tensor(filename, [4])
 
-    preds_x = predictions(num_inputs=3, num_classes=1, learning_rate=0.00000000000001, batch_size=100, num_epochs=200, inputs=inputs, targets=targets_x, train=True, path="van_der_pol/vans_x.pth")
-    preds_y = predictions(num_inputs=3, num_classes=1, learning_rate=0.00000000000001, batch_size=100, num_epochs=200, inputs=inputs, targets=targets_y, train=True, path="van_der_pol/vans_y.pth")
+    preds_x = predictions(num_inputs=3, num_classes=1, learning_rate=0.01, batch_size=200, num_epochs=350, inputs=inputs, targets=targets_x, train=True, path="van_der_pol/vans_x.pth")
+    preds_y = predictions(num_inputs=3, num_classes=1, learning_rate=0.01, batch_size=200, num_epochs=350, inputs=inputs, targets=targets_y, train=True, path="van_der_pol/vans_y.pth")
 
     time = pd.read_csv(filename, usecols=[0])
     init_x = pd.read_csv(filename, usecols=[1])
@@ -172,5 +179,6 @@ def predicting_van_der_pol():
 
     save("data/preds/train/van.csv", {'time' : time.values.flatten(), 'initial_x' : init_x.values.flatten(), 'initial_y' : init_y.values.flatten(), 'x' : preds_x, 'y' : preds_y }, ["time", "initial_x", "initial_y", "x", "y"])
 
-if __name__ == "__main__":
+
+if __name__== "__main__":
     predicting_van_der_pol()

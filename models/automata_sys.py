@@ -109,7 +109,7 @@ class AutomataSys(Automata):
             time += delta
 
         fieldnames = ['t'] + list(initial_var_dict.keys()) + list(values.keys()) + list(self.rate_of_change.keys())
-        print(text)
+        #print(text)
         self.save(text, fieldnames, filename)
 
 
