@@ -170,8 +170,8 @@ def predicting_van_der_pol():
     targets_x = inputs_to_tensor(filename, [3])
     targets_y = inputs_to_tensor(filename, [4])
 
-    preds_x = predictions(num_inputs=3, num_classes=1, learning_rate=0.01, batch_size=200, num_epochs=350, inputs=inputs, targets=targets_x, train=True, path="van_der_pol/vans_x.pth")
-    preds_y = predictions(num_inputs=3, num_classes=1, learning_rate=0.01, batch_size=200, num_epochs=350, inputs=inputs, targets=targets_y, train=True, path="van_der_pol/vans_y.pth")
+    preds_x = predictions(num_inputs=3, num_classes=1, learning_rate=0.01, batch_size=2000, num_epochs=350, inputs=inputs, targets=targets_x, train=True, path="van_der_pol/vans_x.pth")
+    preds_y = predictions(num_inputs=3, num_classes=1, learning_rate=0.01, batch_size=2000, num_epochs=350, inputs=inputs, targets=targets_y, train=True, path="van_der_pol/vans_y.pth")
 
     time = pd.read_csv(filename, usecols=[0])
     init_x = pd.read_csv(filename, usecols=[1])
@@ -180,5 +180,80 @@ def predicting_van_der_pol():
     save("data/preds/train/van.csv", {'time' : time.values.flatten(), 'initial_x' : init_x.values.flatten(), 'initial_y' : init_y.values.flatten(), 'x' : preds_x, 'y' : preds_y }, ["time", "initial_x", "initial_y", "x", "y"])
 
 
+def predicting_lorenz_system():
+    """
+        predicting_lorenz_system:
+            This will be used for predicting the lorenz system
+    """
+    filename = "data/train/lorenz.csv"
+    inputs = inputs_to_tensor(filename, [0,1,2,3])
+    targets_x = inputs_to_tensor(filename, [4])
+    targets_y = inputs_to_tensor(filename, [5])
+    targets_z = inputs_to_tensor(filename, [6])
+
+    preds_x = predictions(num_inputs=4, num_classes=1, learning_rate=0.0005, batch_size=3000, num_epochs=6000, inputs=inputs, targets=targets_x, train=True, path="lorenz/lorenz_x.pth")
+    preds_y = predictions(num_inputs=4, num_classes=1, learning_rate=0.005, batch_size=3000, num_epochs=6000, inputs=inputs, targets=targets_y, train=True, path="lorenz/lorenz_y.pth")
+    preds_z = predictions(num_inputs=4, num_classes=1, learning_rate=0.005, batch_size=3000, num_epochs=6000, inputs=inputs, targets=targets_z, train=True, path="lorenz/lorenz_z.pth")
+
+    time = pd.read_csv(filename, usecols=[0])
+    init_x = pd.read_csv(filename, usecols=[1])
+    init_y = pd.read_csv(filename, usecols=[2])
+    init_z = pd.read_csv(filename, usecols=[3])
+
+    save("data/preds/train/lorenz.csv", {'time' : time.values.flatten(), 'initial_x' : init_x.values.flatten(), 'initial_y' : init_y.values.flatten(), 'initial_z' : init_z.values.flatten(), 'x' : preds_x, 'y' : preds_y, 'z' : preds_z }, ["time", "initial_x", "initial_y", "x", "y", "z"])
+
+
+def predicting_laub_loomis():
+    """
+        laub_loomis:
+            This will be used for predicting the lorenz system
+    """
+    filename = "data/train/laub_loomis.csv"
+    columns = [i for i in range (8,15)]
+    columns = columns.append(0)
+    inputs = inputs_to_tensor(filename, [0,8,9,10,11,12,13,14])
+    targets_x = inputs_to_tensor(filename, [8])
+    targets_y = inputs_to_tensor(filename, [9])
+    targets_z = inputs_to_tensor(filename, [10])
+    targets_w = inputs_to_tensor(filename, [11])
+    targets_p = inputs_to_tensor(filename, [12])
+    targets_q = inputs_to_tensor(filename, [13])
+    targets_m = inputs_to_tensor(filename, [14])
+
+    preds_x = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_x, train=True, path="loomis/loomis_x.pth")
+    preds_y = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_y, train=True, path="loomis/loomis_y.pth")
+    preds_z = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_z, train=True, path="loomis/loomis_z.pth")
+    preds_w = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_w, train=True, path="loomis/loomis_w.pth")
+    preds_p = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_p, train=True, path="loomis/loomis_p.pth")
+    preds_q = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_q, train=True, path="loomis/loomis_q.pth")
+    preds_m = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=500, num_epochs=350, inputs=inputs, targets=targets_m, train=True, path="loomis/loomis_m.pth")
+
+    time = pd.read_csv(filename, usecols=[0])
+    init_x = pd.read_csv(filename, usecols=[1])
+    init_y = pd.read_csv(filename, usecols=[2])
+    init_z = pd.read_csv(filename, usecols=[3])
+    init_w = pd.read_csv(filename, usecols=[4])
+    init_p = pd.read_csv(filename, usecols=[5])
+    init_q = pd.read_csv(filename, usecols=[6])
+    init_m = pd.read_csv(filename, usecols=[7])
+
+    save("data/preds/train/loomis.csv", {'time' : time.values.flatten(), 
+        'initial_x' : init_x.values.flatten(), 
+        'initial_y' : init_y.values.flatten(), 
+        'initial_z' : init_z.values.flatten(), 
+        'initial_w' : init_w.values.flatten(), 
+        'initial_p' : init_p.values.flatten(), 
+        'initial_q' : init_q.values.flatten(),
+        'initial_m' : init_m.values.flatten(), 
+        'x' : preds_x,
+        'y' : preds_y, 
+        'z' : preds_z,
+        'w' : preds_w,
+        'p' : preds_p, 
+        'q' : preds_q,
+        'm' : preds_m,
+         }, ["time", "initial_x", "initial_y", "x", "y", "z", "w", "p", "q", "m"])
+
+
 if __name__== "__main__":
-    predicting_van_der_pol()
+   predicting_lorenz_system()
