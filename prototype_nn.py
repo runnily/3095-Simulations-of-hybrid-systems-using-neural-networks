@@ -47,9 +47,11 @@ class prototype(nn.Module):
         """
         super(prototype, self).__init__()
         
-        self.layer_0 = nn.Linear(num_inputs, 50)
-        self.layer_1 = nn.Linear(50, 50)
-        self.layer_2 = nn.Linear(50, num_classes)
+        self.layer_0 = nn.Linear(num_inputs, 50) 
+        self.layer_1 = nn.Linear(50, 100)
+        self.layer_2 = nn.Linear(100, 200)
+        self.layer_3 = nn.Linear(200, 400)
+        self.layer_4 = nn.Linear(400, num_classes)
         self.learning_rate = learning_rate
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -67,10 +69,20 @@ class prototype(nn.Module):
         Returns:
             (<class 'torch.Tensor'>): A tensor of predictions provided by our neural network
         """
-        inputs = F.relu(self.layer_0(inputs))
-        inputs = self.layer_1(inputs)
-        inputs = self.layer_2(inputs)
-        return inputs
+        outputs = self.layer_0(inputs) # apply the linear function
+        outputs = F.relu(outputs) # Then apply the activation function to layer_0
+
+        outputs = self.layer_1(outputs) # apply the linear function to layer_1
+        outputs = F.relu(outputs) # apply the activation function to layer_1
+
+        outputs = self.layer_2(outputs) # apply the linear function to layer_2
+        outputs = F.relu(outputs) # apply the activation function to layer_2
+
+        outputs = self.layer_3(outputs) # apply the linear function to layer_3
+        outputs = F.relu(outputs) # apply the activation function to layer_3
+        
+        outputs = self.layer_4(outputs) # applying linear function to layer_4
+        return outputs
 
     def loss_function(self):
         """

@@ -1,6 +1,6 @@
 """
     Arthur: Adanna Obibuaku
-    Purpose: This module is used to reperesent the models
+    Purpose: This module is used to reperesent the models within the files
 """
 from models import State
 from models import Automata
@@ -83,7 +83,8 @@ def van_der_pol_oscillator():
         return dxdt, dydt
 
     van_df = []
-    time = np.arange(0, 200, 0.1)
+    #100.1  
+    time = np.arange(0, 20.1, 0.001)
 
     for init_x in range(1,5):
         for init_y in range(1,5):
@@ -142,42 +143,41 @@ def laub_loomis():
         laub_loomis.append(df)
     
     laub_loomis = pd.concat(laub_loomis)
-    laub_loomis.to_csv("data/train/laub_loomis.csv", index = False)
+    laub_loomis.to_csv("data/train/laub.csv", index = False)
 
 def lorenz_system():
     """
-        This runs the lorenx system model using euler method
+        This runs the lorenz system model using euler method
     """
-    sigma = 10
-    beta = 8/3
-    rho = 28
-
-    dxdt = lambda y, x : sigma * (y - x)
-    dydt = lambda x, y, z: x * (rho - z) - y
-    dzdt = lambda x, y, z: x * y - beta * z
-
-    funcs = [dxdt, dydt, dzdt]
-    LORENZ = State("lorenz", lambda x: True, funcs)
-    system = AutomataSys(LORENZ, [LORENZ], [lambda x: True])
-
-
+    SIGMA = 10
+    BETA = 8/3
+    RHO = 28
+    
+    def f(state, t):
+        x, y, z = state
+        dxdt = SIGMA * (y - x)
+        dydt = x * (RHO - z) - y
+        dzdt = x * y - BETA * z
+        return dxdt, dydt, dzdt
+    time = np.arange(0, 30.1, 0.0001)
+    lorenz = []
+    filename = 'data/train/lorenz.csv'
     for init_x in range (1,3):
         for init_y in range(1,3):
             for init_z in range(1,3):
-                system.run([init_x, init_y, init_z], 0.01, 3000, 'data/train/lorenz.csv')
-    """
-    kjnfor init_x in range(5,7):
-        for init_y in range(5,7):
-            for init_z in range(5,7):
-                system.run([init_x, init_y, init_z], 0.01, 25, '/data/train/lorenz.csv')
-    
-    for init_x in range (1,5):
-        for init_y in range(1,5):
-            for init_z in range(1,5):
-                df = pd.DataFrame(data=pd.read_csv("../data/train/lorenz.csv", usecols=[0,4,5,6]))
-                data = df.query("init_x == {} & init_y = {} & init_z = {} & t == {}".format(init_x, init_y, init_z, 999)).y.item() 
-                system.run(data, 0.1, 20, "../data/test/lorenz.csv", 999)"""
+                states_0 = [init_x, init_y, init_z]
+                state = odeint(f, states_0, time)
+                data = {'time' : time, 'x' : state[:, 0], 'y' : state[:, 1], 'z' : state[:, 2],}
+                df = pd.DataFrame(data=data)
 
+                df['initial_x'] = init_x
+                df['initial_y'] = init_y
+                df['initial_z'] = init_z
+
+                lorenz.append(df)
+
+    lorenz =  pd.concat(lorenz)
+    lorenz.to_csv(filename, index=False)
 
 if __name__ == "__main__":
-    van_der_pol_oscillator()
+    lorenz_system()
