@@ -146,7 +146,7 @@ def predicting_newtons_cooling_law(filename, train):
     targets = inputs_to_tensor(filename, [2])
 
     if train:
-        preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=1000, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
+        preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=100, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
         savefile = "data/preds/train/newtons_cooling_law.csv"
     else:
         preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=600, inputs=inputs, targets=targets, train=False, path="newtons_cooling_law.pth")
@@ -156,8 +156,8 @@ def predicting_newtons_cooling_law(filename, train):
     time_temp = pd.read_csv(filename, usecols=[1])
 
     
-    save(savefile, {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
-    return savefile
+    #save(savefile, {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
+    #return savefile
 
 def predicting_van_der_pol():
     """
@@ -193,9 +193,9 @@ def predicting_lorenz_system():
     targets_y = inputs_to_tensor(filename, [2])
     targets_z = inputs_to_tensor(filename, [3])
 
-    preds_x = predictions(num_inputs=4, num_classes=1, learning_rate=0.1, batch_size=5287, num_epochs=5, inputs=inputs, targets=targets_x, train=True, path="lorenz/lorenz_x.pth")
-    preds_y = predictions(num_inputs=4, num_classes=1, learning_rate=0.1, batch_size=5287, num_epochs=5, inputs=inputs, targets=targets_y, train=True, path="lorenz/lorenz_y.pth")
-    preds_z = predictions(num_inputs=4, num_classes=1, learning_rate=0.1, batch_size=5287, num_epochs=5, inputs=inputs, targets=targets_z, train=True, path="lorenz/lorenz_z.pth")
+    preds_x = predictions(num_inputs=4, num_classes=1, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets_x, train=True, path="lorenz/lorenz_x.pth")
+    preds_y = predictions(num_inputs=4, num_classes=1, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets_y, train=True, path="lorenz/lorenz_y.pth")
+    preds_z = predictions(num_inputs=4, num_classes=1, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets_z, train=True, path="lorenz/lorenz_z.pth")
 
     time = pd.read_csv(filename, usecols=[0])
     init_x = pd.read_csv(filename, usecols=[4])
@@ -261,6 +261,4 @@ def predicting_laub_loomis():
 
 
 if __name__== "__main__":
-   predicting_lorenz_system()
-   predicting_laub_loomis()
    predicting_newtons_cooling_law("data/train/newtons_cooling_law.csv", True)

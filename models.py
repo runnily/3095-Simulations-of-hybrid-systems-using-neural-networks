@@ -159,22 +159,23 @@ def lorenz_system():
         dydt = x * (RHO - z) - y
         dzdt = x * y - BETA * z
         return dxdt, dydt, dzdt
-    time = np.arange(0, 30.1, 0.0001)
+
+    time = np.arange(0, 50.1, 0.01)
     lorenz = []
     filename = 'data/train/lorenz.csv'
-    for init_x in range (1,3):
-        for init_y in range(1,3):
-            for init_z in range(1,3):
-                states_0 = [init_x, init_y, init_z]
-                state = odeint(f, states_0, time)
-                data = {'time' : time, 'x' : state[:, 0], 'y' : state[:, 1], 'z' : state[:, 2],}
-                df = pd.DataFrame(data=data)
 
-                df['initial_x'] = init_x
-                df['initial_y'] = init_y
-                df['initial_z'] = init_z
+    ranges = range(1,5,1)
+    for init_x, init_y, init_z in product(ranges, ranges, ranges): 
+        states_0 = [init_x, init_y, init_z]
+        state = odeint(f, states_0, time)
+        data = {'time' : time, 'x' : state[:, 0], 'y' : state[:, 1], 'z' : state[:, 2],}
+        df = pd.DataFrame(data=data)
 
-                lorenz.append(df)
+        df['initial_x'] = init_x
+        df['initial_y'] = init_y
+        df['initial_z'] = init_z
+
+        lorenz.append(df)
 
     lorenz =  pd.concat(lorenz)
     lorenz.to_csv(filename, index=False)

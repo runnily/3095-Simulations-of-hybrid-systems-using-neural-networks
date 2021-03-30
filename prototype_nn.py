@@ -152,6 +152,7 @@ class prototype(nn.Module):
                 opt.step()
 
             print(f"Epoch: {epoch}  loss: {loss.item()}")
+        return loss.item()
     
 
 
