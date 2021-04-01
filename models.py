@@ -19,7 +19,7 @@ def thermostat():
     HEATING = State("Heating", lambda temp: temp <= 19 and temp < 23, lambda temp: 26 - temp )
     NO_HEATING = State("No heating", lambda temp: temp >= 23, lambda temp: -0.1*temp )
     thermostat = Automata(NO_HEATING, [HEATING, NO_HEATING], [lambda temp: temp < 19, lambda temp: temp >= 23]) 
-    thermostat.run(15, 1, 10000, "Data/thermostat.csv")
+    thermostat.run(15, 1, 10000, "data/thermostat.csv")
 
 def newtons_cooling_law():
     """
@@ -33,7 +33,7 @@ def newtons_cooling_law():
     for t_0 in initial_temp:
         COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
         newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
-        newtons.run(t_0, DELTA, SIMULATIONS, "../data/train/newtons_cooling_law.csv")
+        newtons.run(t_0, DELTA, SIMULATIONS, "data/train/newtons_cooling_law.csv")
 
 
 def simple_model_x0(test):
@@ -181,4 +181,6 @@ def lorenz_system():
     lorenz.to_csv(filename, index=False)
 
 if __name__ == "__main__":
+    van_der_pol_oscillator()
+    laub_loomis()
     lorenz_system()

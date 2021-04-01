@@ -18,12 +18,9 @@ def myfunction(num_list):
     print(total)
     return total
 
-num_cores = multiprocessing.cpu_count()
-inputs = [1,2,3,4,5,6]
-
-
 
 if __name__ == "__main__":
     start = time.time()
-    processed_list = Parallel(n_jobs=30)(delayed(predicting_newtons_cooling_law)("data/train/newtons_cooling_law.csv", True) for i in range(30))
-    print("--- %s seconds ---" % (time.time() - start))
+    #processed_list = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predicting_newtons_cooling_law)("data/train/newtons_cooling_law.csv", True) for i in range(4))
+    #print("--- %s seconds ---" % (time.time() - start))
+    print("".replace(" ", "") == "")

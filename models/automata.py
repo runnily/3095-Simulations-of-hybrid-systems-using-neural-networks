@@ -78,19 +78,19 @@ class Automata:
         for _ in range(num_simulations):
             dydx = self.current.behaviour(y) # Get the change rate of change
             self.transitions(y) # To change the state if needed
-            
+            dydx_string = "dydx"
             if (self.x_0 == None) and (self.x_env == None):
                 text += '{x},{y},{dydx},"{state}"\n'.format(x=x, y=y,dydx=dydx, state=self.current.name)
-                fieldnames = ["x", "y", "dy/dx", "state"]
+                fieldnames = ["x", "y", dydx_string, "state"]
             elif (self.x_0 != None) and (self.x_env == None):
                 text += '{x_0},{x},{y},{dydx},"{state}"\n'.format(x_0 = self.x_0, x=x, y=y,dydx=dydx, state=self.current.name)
-                fieldnames = ["x_0", "x", "y", "dy/dx", "state"]
+                fieldnames = ["x_0", "x", "y", dydx_string, "state"]
             elif (self.x_0 == None) and (self.x_env != None):
                 text += '{x_env},{x},{y},{dydx},"{state}"\n'.format(x_env = self.x_env, x=x, y=y,dydx=dydx, state=self.current.name)
-                fieldnames = ["x_env", "x", "y", "dy/dx", "state"]
+                fieldnames = ["x_env", "x", "y", dydx_string, "state"]
             else:
                 text += '{x_0},{x_env},{x},{y},{dydx},"{state}"\n'.format(x_0 = self.x_0, x_env = self.x_env, x=x, y=y,dydx=dydx, state=self.current.name)
-                fieldnames = ["x_0", "x_env", "x", "y", "dy/dx", "state"]
+                fieldnames = ["x_0", "x_env", "x", "y", dydx_string, "state"]
 
             y += dydx*delta # update the change
             x += delta # delta
@@ -144,7 +144,7 @@ class AutomataSys(Automata):
                 initial_var_dict["initial_"+key[1]] = initial_var[i] 
         return values, initial_var_dict
 
-    def run(self, initial_var, delta, num_simulations, filename):
+    def run(self, initial_var, delta, num_simulations, filename = None):
         """
             run:
                 This is to run the euler method on a set of behaviours in an hybrid automata
@@ -203,4 +203,6 @@ class AutomataSys(Automata):
 
         fieldnames = ['t'] + list(initial_var_dict.keys()) + list(values.keys()) + list(self.rate_of_change.keys())
         #print(text)
-        self.save(text, fieldnames, filename)
+        if filename != None:
+            self.save(text, fieldnames, filename)
+        

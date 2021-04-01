@@ -28,7 +28,6 @@ def save(filename, data, columns):
 
 def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,inputs, targets, train, path = None):
     MAIN_PATH = "data/state/"
-    path = MAIN_PATH + path
     """
         Predictions:
             This is for using the neural network to help produce predictions, for a model.
@@ -48,20 +47,21 @@ def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,i
                 A tensor of inputs for the neural network
     """
     model = NN.prototype(num_inputs, num_classes, learning_rate)
+    loss = 0
 
     if train == True:
         train_dataset = TensorDataset(inputs, targets)
         train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
-        model.train_model(train_loader, num_epochs)
+        loss = model.train_model(train_loader, num_epochs)
         if path != None:
-            NN.torch.save(model.state_dict(), path)
+            NN.torch.save(model.state_dict(), MAIN_PATH + path)
     else:
         if path != None:
-            model.load_state_dict(NN.torch.load(path))
+            model.load_state_dict(NN.torch.load(MAIN_PATH + path))
             model.eval()
-
-    preds = model(inputs).detach().numpy().flatten()
-    return preds
+        
+    preds = model(inputs)
+    return preds.detach(), loss
 
 def inputs_to_tensor(filename, columns):
     """
@@ -80,6 +80,28 @@ def inputs_to_tensor(filename, columns):
     data = from_numpy(data.to_numpy(dtype='float32')) # converts the numpy array into a tensor
     return data
 
+def df_flatten(df_array):
+    """
+        flatten:
+            Flatterns a df and turns it into a numpy array
+        Args:
+            Array ():
+        returns:
+            <numpy> : The flatten numpy array
+    """
+    return df_array.values.flatten()
+
+def tensor_flatten(tensor_array):
+    """
+        flatten:
+            Flatterns an array tensor and turns it into a numpy array
+        Args:
+            Array ():
+        returns:
+            <numpy> : The flatten numpy array
+    """
+    return tensor_array.numpy().flatten()
+
 def predicting_simple_model_x0():
     """
         This is the first models that I will be using in my neural network. This is to used to check
@@ -92,7 +114,7 @@ def predicting_simple_model_x0():
     inputs = inputs_to_tensor(filename, [0])
     targets = inputs_to_tensor(filename, [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=301000, num_epochs=200, inputs=inputs, targets=targets, train=True, path="simple_model_x0.pth" )
+    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=301000, num_epochs=200, inputs=inputs, targets=targets, train=True, path="simple_model_x0.pth" )
     save("data/preds/train/simple_model_x0.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_simple_model_x1():
@@ -106,7 +128,7 @@ def predicting_simple_model_x1():
     inputs = inputs_to_tensor(filename, [0])
     targets = inputs_to_tensor(filename, [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_x1.pth" )
+    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_x1.pth" )
     save("data/preds/train/simple_model_x1.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_simple_model_y2():
@@ -121,7 +143,7 @@ def predicting_simple_model_y2():
     inputs = inputs_to_tensor(filename, [0])
     targets = inputs_to_tensor(filename, [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_y2.pth" )
+    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path="simple_model_y2.pth" )
     save("data/preds/train/simple_model_y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
 def predicting_simple_model_x1y2():
@@ -134,30 +156,25 @@ def predicting_simple_model_x1y2():
     inputs = inputs_to_tensor("data/train/simple_model_x1.csv", [0])
     targets = inputs_to_tensor("data/train/simple_model_y2.csv", [1])
 
-    preds = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=50, num_epochs=5000, inputs=inputs, targets=targets, train=True, path="simple_model_x1y2.pth" )
+    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=50, num_epochs=5000, inputs=inputs, targets=targets, train=True, path="simple_model_x1y2.pth" )
     save("data/preds/train/simple_model_x1y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : preds}, ["x", "y"])
 
-def predicting_newtons_cooling_law(filename, train):
+def predicting_newtons_cooling_law():
     """
         predicting_cooling:
             This will be used uses the neural network to simulate the dynamics of newtons cooling laws.
     """
+    
+    filename = "data/train/newtons_cooling_law.csv"
     inputs = inputs_to_tensor(filename, [0,1])
     targets = inputs_to_tensor(filename, [2])
 
-    if train:
-        preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=100, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
-        savefile = "data/preds/train/newtons_cooling_law.csv"
-    else:
-        preds = predictions(num_inputs=2, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=600, inputs=inputs, targets=targets, train=False, path="newtons_cooling_law.pth")
-        savefile = "data/preds/test/newtons_cooling_law.csv"
+    preds, _= predictions(num_inputs=2, num_classes=1, learning_rate=0.0001, batch_size=50, num_epochs=100, inputs=inputs, targets=targets, train=True, path="newtons_cooling_law.pth")
 
     init_temp = pd.read_csv(filename, usecols=[0])
     time_temp = pd.read_csv(filename, usecols=[1])
-
     
-    #save(savefile, {'initial_temp' : init_temp.values.flatten(), 'time' : time_temp.values.flatten(), 'temp' : preds}, ["initial_temp", "time", "temp"])
-    #return savefile
+    save(filename, {'initial_temp' : df_flatten(init_temp), 'time' : df_flatten(time_temp), 'temp' : tensor_flatten(preds)}, ["initial_temp", "time", "temp"])
 
 def predicting_van_der_pol():
     """
@@ -167,19 +184,18 @@ def predicting_van_der_pol():
     """
     filename = "data/train/van.csv"
     inputs = inputs_to_tensor(filename, [0,3,4])
-    targets_x = inputs_to_tensor(filename, [1])
-    targets_y = inputs_to_tensor(filename, [2])
+    targets = inputs_to_tensor(filename, [1, 2])
 
     # 1000
     # when it was 10, it was 5
-    preds_x = predictions(num_inputs=3, num_classes=1, learning_rate=0.0005, batch_size=15, num_epochs=25, inputs=inputs, targets=targets_x, train=True, path="van_der_pol/vans_x.pth")
-    preds_y = predictions(num_inputs=3, num_classes=1, learning_rate=0.0005, batch_size=15, num_epochs=25, inputs=inputs, targets=targets_y, train=True, path="van_der_pol/vans_y.pth")
-
+    preds, _ = predictions(num_inputs=3, num_classes=2, learning_rate=0.00005, batch_size=15, num_epochs=25, inputs=inputs, targets=targets, train=True, path="van.pth")
+    
     time = pd.read_csv(filename, usecols=[0])
     init_x = pd.read_csv(filename, usecols=[3])
     init_y = pd.read_csv(filename, usecols=[4])
+   
+    save("data/preds/train/van.csv", {'time' : df_flatten(time), 'initial_x' : df_flatten(init_x), 'initial_y' : df_flatten(init_y), 'x' : tensor_flatten(preds[:,0]), 'y': tensor_flatten(preds[:,1])}, ["time", "initial_x", "initial_y", "x", "y"])
 
-    save("data/preds/train/van.csv", {'time' : time.values.flatten(), 'initial_x' : init_x.values.flatten(), 'initial_y' : init_y.values.flatten(), 'x' : preds_x, 'y' : preds_y }, ["time", "initial_x", "initial_y", "x", "y"])
 
 
 def predicting_lorenz_system():
@@ -189,20 +205,16 @@ def predicting_lorenz_system():
     """
     filename = "data/train/lorenz.csv"
     inputs = inputs_to_tensor(filename, [0,4,5,6])
-    targets_x = inputs_to_tensor(filename, [1])
-    targets_y = inputs_to_tensor(filename, [2])
-    targets_z = inputs_to_tensor(filename, [3])
+    targets = inputs_to_tensor(filename, [1, 2, 3])
 
-    preds_x = predictions(num_inputs=4, num_classes=1, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets_x, train=True, path="lorenz/lorenz_x.pth")
-    preds_y = predictions(num_inputs=4, num_classes=1, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets_y, train=True, path="lorenz/lorenz_y.pth")
-    preds_z = predictions(num_inputs=4, num_classes=1, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets_z, train=True, path="lorenz/lorenz_z.pth")
-
+    preds, _ = predictions(num_inputs=4, num_classes=3, learning_rate=0.000000005, batch_size=15, num_epochs=100, inputs=inputs, targets=targets, train=True, path="lorenz.pth")
     time = pd.read_csv(filename, usecols=[0])
+
     init_x = pd.read_csv(filename, usecols=[4])
     init_y = pd.read_csv(filename, usecols=[5])
     init_z = pd.read_csv(filename, usecols=[6])
 
-    save("data/preds/train/lorenz.csv", {'time' : time.values.flatten(), 'initial_x' : init_x.values.flatten(), 'initial_y' : init_y.values.flatten(), 'initial_z' : init_z.values.flatten(), 'x' : preds_x, 'y' : preds_y, 'z' : preds_z }, ["time", "initial_x", "initial_y", "initial_z", "x", "y", "z"])
+    save("data/preds/train/lorenz.csv", {'time' : df_flatten(time), 'initial_x' : df_flatten(init_x), 'initial_y' : df_flatten(init_y), 'initial_z' : df_flatten(init_z), 'x' : tensor_flatten(preds[:,0]), 'y' : tensor_flatten(preds[:,1]), 'z' : tensor_flatten(preds[:,2]) }, ["time", "initial_x", "initial_y", "initial_z", "x", "y", "z"])
 
 
 def predicting_laub_loomis():
@@ -214,24 +226,13 @@ def predicting_laub_loomis():
     columns = [i for i in range (8,15)]
     columns = columns.append(0)
     inputs = inputs_to_tensor(filename, [0,8,9,10,11,12,13,14])
-    targets_x = inputs_to_tensor(filename, [1])
-    targets_y = inputs_to_tensor(filename, [2])
-    targets_z = inputs_to_tensor(filename, [3])
-    targets_w = inputs_to_tensor(filename, [4])
-    targets_p = inputs_to_tensor(filename, [5])
-    targets_q = inputs_to_tensor(filename, [6])
-    targets_m = inputs_to_tensor(filename, [7])
+    targets = inputs_to_tensor(filename, [1,2,3,4,5,6,7])
+ 
 
     EPOCHS = 10
     BATCH = 500
 
-    preds_x = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_x, train=True, path="loomis/loomis_x.pth")
-    preds_y = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_y, train=True, path="loomis/loomis_y.pth")
-    preds_z = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_z, train=True, path="loomis/loomis_z.pth")
-    preds_w = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_w, train=True, path="loomis/loomis_w.pth")
-    preds_p = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_p, train=True, path="loomis/loomis_p.pth")
-    preds_q = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_q, train=True, path="loomis/loomis_q.pth")
-    preds_m = predictions(num_inputs=8, num_classes=1, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets_m, train=True, path="loomis/loomis_m.pth")
+    preds, _ = predictions(num_inputs=8, num_classes=7, learning_rate=0.0001, batch_size=BATCH, num_epochs=EPOCHS, inputs=inputs, targets=targets, train=True, path="loomis.pth")
 
     time = pd.read_csv(filename, usecols=[0])
     init_x = pd.read_csv(filename, usecols=[8])
@@ -242,23 +243,26 @@ def predicting_laub_loomis():
     init_q = pd.read_csv(filename, usecols=[13])
     init_m = pd.read_csv(filename, usecols=[14])
 
-    save("data/preds/train/loomis.csv", {'time' : time.values.flatten(), 
-        'initial_x' : init_x.values.flatten(), 
-        'initial_y' : init_y.values.flatten(), 
-        'initial_z' : init_z.values.flatten(), 
-        'initial_w' : init_w.values.flatten(), 
-        'initial_p' : init_p.values.flatten(), 
-        'initial_q' : init_q.values.flatten(),
-        'initial_m' : init_m.values.flatten(), 
-        'x' : preds_x,
-        'y' : preds_y, 
-        'z' : preds_z,
-        'w' : preds_w,
-        'p' : preds_p, 
-        'q' : preds_q,
-        'm' : preds_m,
+    save("data/preds/train/loomis.csv", {'time' : df_flatten(time), 
+        'initial_x' : df_flatten(init_x), 
+        'initial_y' : df_flatten(init_y), 
+        'initial_z' : df_flatten(init_z), 
+        'initial_w' : df_flatten(init_w),
+        'initial_p' : df_flatten(init_p), 
+        'initial_q' : df_flatten(init_q),
+        'initial_m' : df_flatten(init_m), 
+        'x' : tensor_flatten(preds[:,0]),
+        'y' : tensor_flatten(preds[:,1]),
+        'z' : tensor_flatten(preds[:,2]),
+        'w' : tensor_flatten(preds[:,3]),
+        'p' : tensor_flatten(preds[:,4]),
+        'q' : tensor_flatten(preds[:,5]),
+        'm' : tensor_flatten(preds[:,6]),
          }, ["time", "initial_x", "initial_y", "initial_z", "initial_w", "initial_p", "initial_q", "initial_m", "x", "y", "z", "w", "p", "q", "m"])
 
 
 if __name__== "__main__":
-   predicting_newtons_cooling_law("data/train/newtons_cooling_law.csv", True)
+   predicting_newtons_cooling_law()
+   predicting_van_der_pol()
+   predicting_laub_loomis()
+   predicting_lorenz_system()
