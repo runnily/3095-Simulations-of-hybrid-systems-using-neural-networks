@@ -69,8 +69,7 @@ class LossUtilities():
             num_epoches_1 = default_num_epoches if num_epoches == None else num_epoches[i]
             
             # Runs in parrell multiple times.
-            loss = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predictions)(number_inputs, number_classes, learning_rate, batch_size_1, num_epoches_1, inputs, targets, True, None) for _ in range(30))
-
-            loss_dict["lr = {}, bs = {}, ts = {}, epoch = {}".format(learning_rate, batch_size_1,time_step_1,num_epoches_1)] = [loss[0][1]]
+            loss = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predictions)(number_inputs, number_classes, learning_rate, batch_size_1, 1, inputs, targets, True, None) for _ in range(3))
+            loss_dict["lr = {}, bs = {}, ts = {}, epoch = {}".format(learning_rate, batch_size_1,time_step_1,num_epoches_1)] = [x[1] for x in loss]
 
         return loss_dict, pd.DataFrame(data=loss_dict)
