@@ -1,3 +1,10 @@
+"""
+    Arthur: Adanna Obibuaku
+    Purpose: This module is acts as a helper for collecting 30 loss data item of the neural network, depedant on the parameters.
+             This defines an abstract class which will be used to collect 30 loss data items, will specifiying certain parameters
+             that should be that correspond to the 30 points.
+    Date:   29/03/21
+"""
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -17,25 +24,57 @@ class LossUtilities():
     """
     @abstractmethod
     def simulations(self, delta):
+        """
+            simulation: This will perform a simulation of the model
+            Args:
+                delta (float): This denotes the time step that is used
+            Returns:
+                (class <DataFrame>): This would will produce the dataframe of the simulations.
+        """
         pass
 
     @abstractmethod
     def default_model_inputs(self):
+        """
+            default_model_input: An abstract class which will be used for return their default inputs for the models and 
+                                 corresponding neural network model.
+            Args:
+                None
+            Returns:
+                (int) : Denotes the default learning rate
+                (int) : Denotes the default batch size
+                (float) : Denotes the default time step
+                (int) : Denotes the number of epoches being used
+                (int) : Denotes the number of inputs being used.
+                (class <Tensor>) : Denotes the inputs being put into the neural network
+                (class <Tensor>) : Densotes the targets of the neural network
+
+        """
         pass
     
     def inputs_to_tensor(self, filename, columns):
+        """
+            inputs_to_tensor:
+                This would turn a dataframe into a tensor
+            Args:
+                filename (string): The filename which we want to read from
+                columns (class <list>): The columns which we want to use in the file
+            Returns:
+                <class <Tensor>): Returns a tensor of the dataframe
+        """
         return inputs_to_tensor(filename, columns)
     
     def loss(self, len_parameters, **list_of_parameters):
         """
-            loss: This would be using for gathering data at least 30 times. To then be used for predictions.
+            loss: For each parameter that is defined in list of parameter it will produce 30 loss items that correspond to what was
+                  specified in the list of parameter.
             
             Args:
-                list_of_paramters <dict> : Is a dictionary with a list of paramters
+                list_of_paramters (class <dict>) : Is a dictionary with a list of paramters
                 len_parameter: This is the length of the parameters
             Returns:
-                <array> : An array of the loss
-                <DataFrame> : The dataframe of arrays
+                (class <list>) : An array of the loss
+                (<DataFrame>) : The dataframe of arrays
         """
         # checks if the len of each array in len_parameters is the same
         for key, values in list_of_parameters.items():

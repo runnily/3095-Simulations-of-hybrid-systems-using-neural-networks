@@ -1,6 +1,8 @@
 """
     Arthur: Adanna Obibuaku
-    Purpose: This module is used to reperesent the models within the files
+    Purpose: This module is used to reperesent the models defined in the dissertation. In addition,
+             simulations of those models
+    Date:   09/02/21
 """
 from models import State
 from models import Automata
@@ -36,21 +38,18 @@ def newtons_cooling_law():
         newtons.run(t_0, DELTA, SIMULATIONS, "data/train/newtons_cooling_law.csv")
 
 
-def simple_model_x0(test):
+def simple_model_x0():
     """
         This is a very simple model to test the neural network and 
         see wether it performs correctly
     """
     MODEL = State("None", lambda n: True, lambda x: 0)
     simple_automata = Automata(MODEL, [MODEL], [lambda n: True])
-    if test:
-        simple_automata.run(1, 1, 1000, "../data/train/simple_model_x0.csv")
-    else:
-        simple_automata.run(1, 1, 100, "../data/test/simple_model_x0.csv", 1000)
-   
 
+    simple_automata.run(1, 1, 1000, "../data/train/simple_model_x0.csv")
+    simple_automata.run(1, 1, 100, "../data/test/simple_model_x0.csv", 1000)
 
-def simple_model_x1y2(test):
+def simple_model_x1y2():
     """
         simple_model:
             This is a simple models to test the neural network
@@ -61,14 +60,9 @@ def simple_model_x1y2(test):
     MODEL_2 = State("None", lambda n: True, lambda y: 2)
     simple_automata_2 = Automata(MODEL_2, [MODEL_2], [lambda n: True])
 
-    if test:
-        simple_automata_1.run(0, 1, 2000, "../data/train/simple_model_x1.csv")
 
-        simple_automata_2.run(0, 1, 2000, "../data/train/simple_model_y2.csv")
-    else:
-        simple_automata_1.run(2000, 1, 100, "../data/test/simple_model_x1.csv", 2000)
-
-        simple_automata_2.run(4000, 1, 100, "../data/test/simple_model_y2.csv",2000)
+    simple_automata_1.run(0, 1, 2000, "../data/train/simple_model_x1.csv")
+    simple_automata_2.run(0, 1, 2000, "../data/train/simple_model_y2.csv")
 
 def van_der_pol_oscillator(delta, save):
     """

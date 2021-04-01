@@ -1,9 +1,8 @@
 """
-Arthur:
-    Adanna Obibuaku
-Purpose:    
-    This module implements a hybrid automata class. This is a standard class
-    for reperesenting all models of hybrid automata
+    Arthur: Adanna Obibuaku
+    Purpose:    This module implements a hybrid automata class. This is a standard class
+                for reperesenting all models of hybrid automata
+    Date: 08/02/21
 """
 
 import csv 

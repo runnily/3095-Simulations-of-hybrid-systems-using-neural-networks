@@ -1,3 +1,10 @@
+"""
+    Arthur: Adanna Obibuaku
+    Purpose: This module is used for gathering data. That is 30 data plots to be later used for
+             boxplots.
+    Date:   29/03/21
+"""
+
 import default
 
 TITLE_LR = "Learning Rate"
@@ -6,12 +13,21 @@ TITLE_NUM_EPOCHES = "Number Of Epoches"
 TITLE_TIME_STEP = "Time Step"
 
 def thiry_data_items(title, model, filename, **para):
+    """
+        thirty_data_item: This denotes will gather the 30 plots data loss item corresponding to the parameter
+        Args:
+            title (string) : This will show the title for the plots being gathered
+            model (class <LossUtilities>) : This will show the model being used
+            filename (string) : This will save the filename
+            ***para: This denotes the parameter that will be used.
+    """
     print("--- %s  ---" % (title))
     values = list(para.values())
     if len(values) > 0:
         data, df = model.loss(len(values[0]), **para)
         df.to_csv(filename, index=False)
 
+# This is the methods will perform the collection of data plots ...
 
 def newton(lr, batch_size, num_epoches):
     if lr:
@@ -58,8 +74,7 @@ def laub(lr, batch_size, num_epoches, time_step):
 
     if time_step:
         para = {"time_step" : [0.1, 0.01, 0.001]}
-        thiry_data_items(TITLE_TIME_STEP, default.VanDerPol(),"../data/boxplots/van/time_step.csv", **para)
-
+        thiry_data_items(TITLE_TIME_STEP, default.VanDerPol(),"../data/boxplots/laub/time_step.csv", **para)
 
 
 if __name__== "__main__":

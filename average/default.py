@@ -5,8 +5,11 @@ sys.path.insert(1, '../')
 from simulations import van_der_pol_oscillator, laub_loomis, lorenz_system
 
 """
-    This module would be used for defining the classes which use the abstract class loss Utitlties. 
-    This can then start gathering 30 data loss outputs based on the parameter put into the class.
+    Arthur: Adanna Obibuaku
+    Purpose: This will module is used for define the abstract class. Each class defined correspond to a
+             Model. Within the class it define their default inputs and simulation method, for defining
+             a simulation when needed.
+    Date:   29/03/21
 """
 
 class NewtonsLoss(LossUtilities):

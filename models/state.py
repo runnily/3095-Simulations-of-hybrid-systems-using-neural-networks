@@ -1,11 +1,9 @@
 """
-Arthur:
-    Adanna Obibuaku
-
-Purpose:
-    This module is used for building a state of a hybrid class.
-    This module is commonly going to be called within the hybrid
-    automata module
+    Arthur: Adanna Obibuaku
+    Purpose: This module is used for building a state of a hybrid class.
+            This module is commonly going to be called within the hybrid
+            automata module
+    Date: 08/02/21
 """
 
 class State:

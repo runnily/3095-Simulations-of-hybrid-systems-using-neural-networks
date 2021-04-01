@@ -1,8 +1,8 @@
 """
-Arthur:
-    Adanna Obibuaku
-Purpose:
-    The purpose of the module is to implement a prototype of a hybrid automata
+    Arthur: Adanna Obibuaku
+    Purpose: The is a prototype of neural network. This will be later used for predicting simulations of hybrid systems
+             and dynamic systems.
+    Date: 09/02/21
 """
 # imports 
 import torch
