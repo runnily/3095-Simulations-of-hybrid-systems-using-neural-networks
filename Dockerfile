@@ -9,7 +9,7 @@ COPY requirements.txt .
 
 # Create a virtual enviroment, activate and run the requirements
 RUN python3 -m venv env
-RUN source env/bin/activate
+RUN . env/bin/activate
 RUN pip install -r requirements.txt
 
 # Copy all the absolute files into the working directory
