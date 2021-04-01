@@ -8,3 +8,8 @@ http://www.turingfinance.com/misconceptions-about-neural-networks/
 https://www.google.com/search?client=safari&rls=en&q=predicting+hybrid+automata+simulations+with+neural+networks&ie=UTF-8&oe=UTF-8
 https://www.geeksforgeeks.org/matplotlib-axes-axes-twinx-in-python/
 https://seaborn.pydata.org/tutorial/axis_grids.html
+
+https://medium.com/the-theory-of-everything/understanding-activation-functions-in-neural-networks-9491262884e0
+https://www.southampton.ac.uk/~feeg1001/notebooks/Matplotlib.html
+https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
+https://flowstar.org/benchmarks/laub-loomis-model/

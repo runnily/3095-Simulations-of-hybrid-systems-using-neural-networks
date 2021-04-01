@@ -1,4 +1,5 @@
 import default
+
 TITLE_LR = "Learning Rate"
 TITLE_BATCH_SIZE = "Batch Size"
 TITLE_NUM_EPOCHES = "Number Of Epoches"
@@ -42,18 +43,22 @@ def van(lr, batch_size, num_epoches, time_step):
         para = {"time_step" : [0.1, 0.01, 0.001]}
         thiry_data_items(TITLE_TIME_STEP, default.VanDerPol(),"../data/boxplots/van/time_step.csv", **para)
 
-def laub(lr, batch_size, num_epoches):
+def laub(lr, batch_size, num_epoches, time_step):
     if lr:
         para = {"lr" : [0.0001, 0.00005, 0.000005, 0.0000005, 0.00000005, 0.000000005]}
-        thiry_data_items(TITLE_LR, default.NewtonsLoss,"../data/boxplots/laub/lr.csv", **para)
+        thiry_data_items(TITLE_LR, default.laub(),"../data/boxplots/laub/lr.csv", **para)
 
     if batch_size:
         para = {"batch_size" : [500, 550, 600, 650, 700, 750]}
-        thiry_data_items(TITLE_BATCH_SIZE, default.NewtonsLoss,"../data/boxplots/laub/batch_size.csv", **para)
+        thiry_data_items(TITLE_BATCH_SIZE, default.laub(),"../data/boxplots/laub/batch_size.csv", **para)
 
     if num_epoches:
         para = {"num_epoches" : [10, 20, 30, 40, 50, 60]}
-        thiry_data_items(TITLE_NUM_EPOCHES, default.NewtonsLoss,"../data/boxplots/laub/num_epoches.csv", **para)
+        thiry_data_items(TITLE_NUM_EPOCHES, default.laub(),"../data/boxplots/laub/num_epoches.csv", **para)
+
+    if time_step:
+        para = {"time_step" : [0.1, 0.01, 0.001]}
+        thiry_data_items(TITLE_TIME_STEP, default.VanDerPol(),"../data/boxplots/van/time_step.csv", **para)
 
 
 
