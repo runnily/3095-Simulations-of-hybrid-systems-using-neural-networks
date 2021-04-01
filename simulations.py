@@ -70,10 +70,10 @@ def simple_model_x1y2(test):
 
         simple_automata_2.run(4000, 1, 100, "../data/test/simple_model_y2.csv",2000)
 
-def van_der_pol_oscillator():
+def van_der_pol_oscillator(delta, save):
     """
         van der pol oscillator:
-            This is used for reperesenting the newtons cooling law in our data
+            This is used for running a simulation of the van der pol oscillator model
     """
     MU = 0.5
     def f(state, t):
@@ -84,7 +84,7 @@ def van_der_pol_oscillator():
 
     van_df = []
     #100.1  
-    time = np.arange(0, 20.1, 0.001)
+    time = np.arange(0, 20.1, delta)
 
     for init_x in range(1,5):
         for init_y in range(1,5):
@@ -97,11 +97,13 @@ def van_der_pol_oscillator():
             van_df.append(df)
 
     van_df = pd.concat(van_df)
-    van_df.to_csv("data/train/van.csv", index = False)
+    if save:
+        van_df.to_csv("data/train/van.csv", index = False)
+    return van_df
 
 
 
-def laub_loomis():
+def laub_loomis(delta, save):
     """
         laub_loomis:
             This is used for reperesenting the laun loomis be
@@ -125,7 +127,7 @@ def laub_loomis():
     ranges = range(MIN,MAX,STEP)
 
     laub_loomis = []
-    time = np.arange(0, 500, 0.1)
+    time = np.arange(0, 500, delta)
 
     for x, y, z, w, p, q, m in product(ranges, ranges, ranges, ranges, ranges, ranges, ranges):
         states_0 = [x, y, z, w, p, q, m]
@@ -143,9 +145,11 @@ def laub_loomis():
         laub_loomis.append(df)
     
     laub_loomis = pd.concat(laub_loomis)
-    laub_loomis.to_csv("data/train/laub.csv", index = False)
+    if save:
+        laub_loomis.to_csv("data/train/laub.csv", index = False)
+    return laub_loomis
 
-def lorenz_system():
+def lorenz_system(delta, save):
     """
         This runs the lorenz system model using euler method
     """
@@ -160,7 +164,7 @@ def lorenz_system():
         dzdt = x * y - BETA * z
         return dxdt, dydt, dzdt
 
-    time = np.arange(0, 50.1, 0.01)
+    time = np.arange(0, 50.1, delta)
     lorenz = []
     filename = 'data/train/lorenz.csv'
 
@@ -178,9 +182,11 @@ def lorenz_system():
         lorenz.append(df)
 
     lorenz =  pd.concat(lorenz)
-    lorenz.to_csv(filename, index=False)
+    if save:
+        lorenz.to_csv(filename, index=False)
+    return lorenz
 
 if __name__ == "__main__":
-    van_der_pol_oscillator()
-    laub_loomis()
-    lorenz_system()
+    van_der_pol_oscillator(0.001, True)
+    laub_loomis(0.1, True)
+    lorenz_system(0.01, True)

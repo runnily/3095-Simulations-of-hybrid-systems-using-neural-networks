@@ -16,7 +16,7 @@ class LossUtilities():
             
     """
     @abstractmethod
-    def model(self, num_simulations, delta):
+    def simulations(self, delta):
         pass
 
     @abstractmethod
@@ -45,7 +45,6 @@ class LossUtilities():
         # get the defaults values
         
         default_lr, default_batch_size, default_time_step, default_num_epoches, number_inputs, number_classes, inputs, targets = self.default_model_inputs()
-        
         # sets the list of parameters to None or a list of values to go through
         lr = list_of_parameters.get("lr", None)
         batch_size = list_of_parameters.get("batch_size", None)
@@ -60,13 +59,17 @@ class LossUtilities():
             batch_size_1 = default_batch_size if batch_size == None else batch_size[i]
             if time_step != None:
                 time_step_1 = time_step[i]
+                # This will runs a simulations with the defined time step (delta)
+                # Then use the ressasign inputs and targets to now correspond to the new delta
+                # This would then later be used for caculations
+                inputs, targets = self.simulations(time_step_1) 
             else:
                 time_step_1 = default_batch_size
                 
             num_epoches_1 = default_num_epoches if num_epoches == None else num_epoches[i]
             
             # Runs in parrell multiple times.
-            loss = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predictions)(number_inputs, number_classes, learning_rate, batch_size_1, num_epoches_1, inputs, targets, True, None) for i in range(4))
+            loss = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predictions)(number_inputs, number_classes, learning_rate, batch_size_1, num_epoches_1, inputs, targets, True, None) for i in range(30))
             loss_dict["lr = {}, bs = {}, ts = {}, epoch = {}".format(learning_rate, batch_size_1,time_step_1,num_epoches_1)] = loss
 
         return loss_dict, pd.DataFrame(data=loss_dict)

@@ -188,7 +188,7 @@ def predicting_van_der_pol():
 
     # 1000
     # when it was 10, it was 5
-    preds, _ = predictions(num_inputs=3, num_classes=2, learning_rate=0.00005, batch_size=15, num_epochs=25, inputs=inputs, targets=targets, train=True, path="van.pth")
+    preds, _ = predictions(num_inputs=3, num_classes=2, learning_rate=0.00005, batch_size=15, num_epochs=20, inputs=inputs, targets=targets, train=True, path="van.pth")
     
     time = pd.read_csv(filename, usecols=[0])
     init_x = pd.read_csv(filename, usecols=[3])
@@ -262,7 +262,4 @@ def predicting_laub_loomis():
 
 
 if __name__== "__main__":
-   predicting_newtons_cooling_law()
-   predicting_van_der_pol()
    predicting_laub_loomis()
-   predicting_lorenz_system()
