@@ -16,15 +16,15 @@ def thiry_data_items(title, model, filename, **para):
 def newton(lr, batch_size, num_epoches):
     if lr:
         para = {"lr" : [0.1, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]}
-        thiry_data_items(TITLE_LR, default.NewtonsLoss(),"../data/boxplots/newtons/lr.csv", **para)
+        thiry_data_items(TITLE_LR, default.NewtonsLoss(),"../data/boxplots/newton/lr.csv", **para)
 
     if batch_size:
         para = {"batch_size" : [50, 100, 150, 200, 250, 300]}
-        thiry_data_items(TITLE_BATCH_SIZE, default.NewtonsLoss(),"../data/boxplots/newtons/batch_size.csv", **para)
+        thiry_data_items(TITLE_BATCH_SIZE, default.NewtonsLoss(),"../data/boxplots/newton/batch_size.csv", **para)
 
     if num_epoches:
         para = {"num_epoches" : [50, 100, 150, 200, 250, 300]}
-        thiry_data_items(TITLE_NUM_EPOCHES, default.NewtonsLoss(),"../data/boxplots/newtons/num_epoches.csv", **para)
+        thiry_data_items(TITLE_NUM_EPOCHES, default.NewtonsLoss(),"../data/boxplots/newton/num_epoches.csv", **para)
 
 def van(lr, batch_size, num_epoches, time_step):
     if lr:
@@ -65,4 +65,4 @@ def laub(lr, batch_size, num_epoches, time_step):
 if __name__== "__main__":
     # Add data here for plots you want to collect
     print("..Collecting data..")
-    van(False, False, False, True)
+    van(True, True, True, False)
