@@ -80,4 +80,4 @@ def laub(lr, batch_size, num_epoches, time_step):
 if __name__== "__main__":
     # Add data here for plots you want to collect
     print("..Collecting data..")
-    van(True, True, True, False)
+    laub(True, True, True, True)
