@@ -5,6 +5,7 @@ FROM python:3.8.1
 WORKDIR /simulations-neural
 
 # Copy requirements into working directory
+COPY ./data ./data
 COPY requirements.txt .
 
 # Create a virtual enviroment, activate and run the requirements
@@ -20,7 +21,6 @@ COPY help.txt .
 
 # Copy relative files into the working directory
 COPY ./plots ./plots
-COPY ./datas ./datas
 COPY ./models ./models
 COPY ./average ./average
 
