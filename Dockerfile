@@ -19,8 +19,8 @@ COPY simulations.py .
 COPY help.txt .
 
 # Copy relative files into the working directory
-COPY ./data ./data
 COPY ./plots ./plots
+COPY ./data ./data
 COPY ./models ./models
 COPY ./average ./average
 
