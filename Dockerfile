@@ -21,7 +21,7 @@ COPY help.txt .
 # Copy relative files into the working directory
 COPY ./plots ./plots
 COPY ./models ./models
-COPY ./avaerage ./average
+COPY ./average ./average
 
 
 # RUN apt-get update
