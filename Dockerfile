@@ -25,4 +25,4 @@ COPY ./average ./average
 
 
 # RUN apt-get update
-CMD ["echo", "--Completed--"]
+CMD ["/bin/bash"]
