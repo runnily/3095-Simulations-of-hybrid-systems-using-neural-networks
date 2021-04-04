@@ -40,7 +40,7 @@ class VanDerPol(LossUtilities):
         default_batch_size = 15
         default_time_step = 0.001
         default_num_epoches = 20
-        filename = "../data/train/van.csv"
+        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/van.csv?token=AHVVYT2KLS2TPXMTRIENXNLANBPOO"
         inputs = self.inputs_to_tensor(filename, [0,3,4])
         targets = self.inputs_to_tensor(filename, [1,2])
         number_inputs = 3
@@ -71,10 +71,9 @@ class lorenz(LossUtilities):
 class laub(LossUtilities):
 
     def simulations(self, delta):
-        df_simulations = lorenz_system(delta, False)
-        inputs = df_simulations[['time','initial_x','initial_y',
-        'initial_z']].to_numpy(dtype='float32')
-        outputs = df_simulations[['x','y','z']].to_numpy(dtype='float32')
+        df_simulations = laub_loomis(delta, False)
+        inputs = df_simulations[['time','initial_x','initial_y','initial_z','initial_w','initial_p','initial_q','initial_m']].to_numpy(dtype='float32')
+        outputs = df_simulations[['x','y','z','w','p','q','m']].to_numpy(dtype='float32')  
         return Tensor(inputs), Tensor(outputs)
 
     def default_model_inputs(self):
@@ -82,9 +81,21 @@ class laub(LossUtilities):
         default_batch_size = 500
         default_time_step = 0.01
         default_num_epoches = 10
-        filename = "../data/train/laub.csv"
+        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/laub.csv?token=AHVVYT2DG6NLFI2VSUHWUVDANBUO6"
         inputs = self.inputs_to_tensor(filename, [0,8,9,10,11,12,13,14])
         targets = self.inputs_to_tensor(filename, [1,2,3,4,5,6,7])
         number_inputs = 8
         number_classes = 7  
         return default_lr, default_batch_size, default_time_step, default_num_epoches, number_inputs, number_classes, inputs, targets
+
+    class BouncingBall():
+
+        def simulations(self, delta):
+            """
+                TODO
+            """
+        
+        def default_model_inputs(self, delta):
+            """
+                TODO
+            """

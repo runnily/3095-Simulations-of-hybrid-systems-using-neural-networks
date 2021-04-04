@@ -143,7 +143,7 @@ def laub_loomis(delta, save):
         laub_loomis.to_csv("data/train/laub.csv", index = False)
     return laub_loomis
 
-def lorenz_system(delta, save):
+def lorenz_system(delta, simulations, save):
     """
         This runs the lorenz system model using euler method
     """
@@ -158,7 +158,7 @@ def lorenz_system(delta, save):
         dzdt = x * y - BETA * z
         return dxdt, dydt, dzdt
 
-    time = np.arange(0, 50.1, delta)
+    time = np.arange(0, simulations, delta)
     lorenz = []
     filename = 'data/train/lorenz.csv'
 
@@ -183,4 +183,4 @@ def lorenz_system(delta, save):
 if __name__ == "__main__":
     van_der_pol_oscillator(0.001, True)
     laub_loomis(0.1, True)
-    lorenz_system(0.01, True)
+    lorenz_system(0.01, 50.1, True)

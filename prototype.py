@@ -27,7 +27,7 @@ def save(filename, data, columns):
     df.to_csv(filename, index=False, header=columns)
 
 
-def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,inputs, targets, train, path = None):
+def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,inputs, targets, train, path = None, model = None):
     MAIN_PATH = "data/state/"
     """
         Predictions:
@@ -47,7 +47,9 @@ def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,i
             targets (<class 'torch.Tensor'>):
                 A tensor of inputs for the neural network
     """
-    model = NN.prototype(num_inputs, num_classes, learning_rate)
+    if model == None:
+        model = NN.prototype(num_inputs, num_classes, learning_rate)
+
     loss = 0
 
     if train == True:
@@ -262,7 +264,4 @@ def predicting_laub_loomis():
 
 
 if __name__== "__main__":
-    predicting_simple_model_x0()
-    predicting_simple_model_x1()
-    predicting_simple_model_y2()
-    predicting_simple_model_x1y2()
+    predicting_laub_loomis()
