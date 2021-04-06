@@ -6,104 +6,11 @@
     Date: 09/02/21
 """
 import prototype_nn as NN
+from prototype_nn import save, predictions, inputs_to_tensor, df_flatten, tensor_flatten
 from sklearn import preprocessing as pre
 from torch import from_numpy
 from torch.utils.data import TensorDataset, DataLoader # For mini batches
 import pandas as pd
-
-def save(filename, data, columns):
-    """
-        save:
-            This is used to save the file
-        Args:
-            filename:
-                The specified filename to create
-            data:
-                A dictionary containing the data to be saved
-            columns:
-                The columns names of the data
-    """
-    df = pd.DataFrame(data=data, columns=columns)
-    df.to_csv(filename, index=False, header=columns)
-
-
-def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,inputs, targets, train, path = None, model = None):
-    MAIN_PATH = "data/state/"
-    """
-        Predictions:
-            This is for using the neural network to help produce predictions, for a model.
-        
-        Args:
-            num_inputs (int):
-                This is the number of inputs we would need for the neural networks
-            num_classes (int):
-                This denotes the number of classes that is used in the neural network
-            batch_size (int):
-                This denotes the batch size used within the neural network for making predictions
-            num_epochs (int):
-                This is the number of epochs used to training the data
-            inputs (<class 'torch.Tensor'>): 
-                A tensor of inputs for the neural network
-            targets (<class 'torch.Tensor'>):
-                A tensor of inputs for the neural network
-    """
-    if model == None:
-        model = NN.prototype(num_inputs, num_classes, learning_rate)
-
-    loss = 0
-
-    if train == True:
-        train_dataset = TensorDataset(inputs, targets)
-        train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
-        loss = model.train_model(train_loader, num_epochs)
-        if path != None:
-            NN.torch.save(model.state_dict(), MAIN_PATH + path)
-    else:
-        if path != None:
-            model.load_state_dict(NN.torch.load(MAIN_PATH + path))
-            model.eval()
-        
-    preds = model(inputs)
-    return preds.detach(), loss
-
-def inputs_to_tensor(filename, columns):
-    """
-        inputs_to_tensor:
-            This functions is used to read in a file (ideally a cvs file). It reads in the data that
-            is specfied by the columns. It then converts the inputs into a tensor.
-        Args:
-            filename:  
-                The filename we want to read 
-            columns:
-                The specified data columns to only read
-        Returns:
-            (<>)
-    """
-    data = pd.read_csv(filename, usecols=columns)
-    data = from_numpy(data.to_numpy(dtype='float32')) # converts the numpy array into a tensor
-    return data
-
-def df_flatten(df_array):
-    """
-        flatten:
-            Flatterns a df and turns it into a numpy array
-        Args:
-            Array ():
-        returns:
-            <numpy> : The flatten numpy array
-    """
-    return df_array.values.flatten()
-
-def tensor_flatten(tensor_array):
-    """
-        flatten:
-            Flatterns an array tensor and turns it into a numpy array
-        Args:
-            Array ():
-        returns:
-            <numpy> : The flatten numpy array
-    """
-    return tensor_array.numpy().flatten()
 
 def predicting_simple_model_x0():
     """

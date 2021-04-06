@@ -15,6 +15,7 @@ import torch.nn.functional as F # Relu function
 from torch.utils.data import TensorDataset, DataLoader # For mini batches
 from abc import ABC, abstractmethod
 from sklearn.model_selection import train_test_split
+from typing import Optional
 
 class Training():
     """
@@ -59,7 +60,8 @@ class Training():
         """
         return self.forward(inputs).reshape(-1)
 
-    def train_model(self, training_batch_loader, num_epochs):
+
+    def train_model(self, training_batch_loader, num_epochs, test_inputs=None, test_targets=None):
         """
             training:
                 This will be used to train our model, we first define our gradient
@@ -71,9 +73,19 @@ class Training():
                 training_batch (<class 'torch.utils.data.dataloader.DataLoader'>): This is the number of batches needed to train our
                                     model
                 num_epochs (int): The number of cycles repeated through the full training dataset.
+
+            Returns: 
+                (float) : The loss
+                (<class 'pandas.core.frame.DataFrame'>) : A dataframe showing training and test loss at each epochs
         """
         opt = self.gradient()
         loss_function = self.loss_function()
+
+        # io is a boolean value to denote if the user would want to see the test and train loss at each epoch
+        io = (test_inputs  != None and test_targets != None)
+
+        train_epochs = []
+        test_epochs = []
 
         for epoch in range(num_epochs):
             for inputs, outputs in training_batch_loader:
@@ -93,8 +105,28 @@ class Training():
 
                 opt.step()
 
-            print(f"Epoch: {epoch}  loss: {loss.item()}")
-        return loss.item()
+            print(f"Epoch: {epoch}  Train Loss: {loss.item()}", end=" ")
+
+            if io:
+                test_loss_func = self.loss_function()
+                self.eval() # put on evaluation mode, that denotes trainin is false
+                test_preds = self.feedforward(test_inputs) # put inputs into the function
+
+                # reshape is used to flatten the test targets
+                test_loss = test_loss_func(test_preds, test_targets.reshape(-1)) 
+                print(f"Test Loss {test_loss}", end=" ")
+
+                test_epochs.append(test_loss.item())
+                train_epochs.append(loss.item())
+
+                self.train()
+            print("")
+        
+        if io:
+            return pd.DataFrame(data = {"Train" : train_epochs, "Test" : test_epochs})
+        else:
+            return loss.item()
+        
         
 
 class prototype(nn.Module, Training):
@@ -186,13 +218,16 @@ class CustomeModel(nn.Module, Training):
             with different parameters
     """
 
-    def __init__(self, num_inputs, num_targets, learning_rate, layer_list):
+    def __init__(self, num_inputs, num_targets, learning_rate, layer_list,):
+        
         """
             init:
                 would initiliase the class
             Args:
                 layer_list (A list of dictionarys size 2): This would be the defined layers within the custome model.
-                            The dictionary within layer list has to be in format {"in_features" : x, "out_features" : y}
+                            The dictionary within layer list has to be in format: [2, 50, 100, 200, 400, 1]
+                            where the first position denotes the first layer which has a 2 nodes and 50 output features.
+                            The second position denotes the second layer which has a 50 nodes and 100 outputs and so on.
                 inputs: The number of inputs within for the model.
                 targets: The number of targets within for the model.
         """
@@ -202,16 +237,18 @@ class CustomeModel(nn.Module, Training):
             raise ValueError("They should be at least 1 layer")
         
         # Throws error if length of first layer is not the same as len of inputs
-        num_inputs_first_layer = layer_list[0].get("in_features", -1)
+        num_inputs_first_layer = layer_list[0]
         if (num_inputs_first_layer != num_inputs):
             raise ValueError("First layer has {} features, length of inputs is {}. This should be the same.".format(num_inputs_first_layer, num_inputs))
 
         # Throws error if length of last layer is not the same as lengh of targets
-        num_inputs_last_layer = layer_list[len(layer_list)-1].get("out_features", -1)
+        num_inputs_last_layer = layer_list[len(layer_list)-1]
         if (num_inputs_last_layer != num_targets):
             raise ValueError("Last layer has {} features, length of targets is {}. This should be the same.".format(num_inputs_last_layer, num_targets))
-        
-        self.linear = nn.ModuleList([nn.Linear(**layer) for layer in layer_list])
+
+        num_layers = len(layer_list)
+
+        self.linear = nn.ModuleList([nn.Linear(layer_list[n], layer_list[n+1]) for n in range(num_layers-1)])
 
         self.num_inputs = num_inputs
         self.num_targets = num_targets
@@ -235,11 +272,24 @@ class CustomeModel(nn.Module, Training):
         return optim.Adam(self.parameters(), lr=self.learning_rate)
 
 class Splitting():
-
-    def __init__(self, model, inputs_cols, targets_cols):
-        self.model = model
+    """
+        Contain utilities function which can be used for training.
+    """
+    def __init__(self, inputs_cols, targets_cols, lr = 0.00000015, batch_size = 500, num_epoches = 500):
+        """
+            This would initalise the functions
+            Args:
+                inputs_cols (<class 'list'>) : Is a list of column numbers to loook for
+                targets_cols (<class 'list'>) : Is a list of target column numbers to look for
+                learning_rate (float) : The learning rate of numbers
+                batch_size (int) : The batch size of the class.
+                num_epoches (int) : The number of epoches
+        """
         self.inputs_cols = inputs_cols
         self.targets_cols = targets_cols
+        self.learning_rate = lr
+        self.batch_size = batch_size
+        self.num_epoches = num_epoches
 
     def split(self, dataset_df, test_frac):
         """
@@ -317,10 +367,15 @@ class Splitting():
         
         evaluation_scores = []
         for idx, df in enumerate(groups_df):
-            print("--- fold {} ---".format(idx))
+            print("------------- Fold {} -------------".format(idx))
+            a = [x for x in range(len(groups_df)) if x != idx]
+            print("TEST: {} TRAIN: {}".format(idx, a))
             # trains contains all the groups of dataframes except for the
             # one we are currently iterating on
             train = [groups_df[x] for x in range(len(groups_df)) if x != idx]
+            
+            # This creates a new model, for every group
+            model = prototype(4, 3, self.learning_rate)
 
             # pandas concat dataframes together.
             train = pd.concat(train)
@@ -329,17 +384,114 @@ class Splitting():
             train_inputs = self.df_to_tensor(train, self.inputs_cols)
             test_inputs = self.df_to_tensor(groups_df[idx], self.inputs_cols)
             train_targets = self.df_to_tensor(train, self.targets_cols)
+            test_targets = self.df_to_tensor(groups_df[idx], self.targets_cols)
 
             # load tensor dataset
             train_dataset = TensorDataset(train_inputs, train_targets)
             # Put into into mini batch
-            train_batch_loader = DataLoader(dataset=train_dataset, batch_size=500, shuffle=True)
+            train_batch_loader = DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True)
 
             # Train model
-            self.model.train_model(train_batch_loader, 10)
+            model.train_model(train_batch_loader, self.num_epoches)
             
             # put test inputs into dataset.
-            evaluation_scores.append(self.model(test_inputs))
+            preds = model(test_inputs)
+            loss_func = model.loss_function()
+            evaluation_scores.append(loss_func(preds, test_targets))
 
         return evaluation_scores
+
+def save(filename, data, columns):
+    """
+        save:
+            This is used to save the file
+        Args:
+            filename:
+                The specified filename to create
+            data:
+                A dictionary containing the data to be saved
+            columns:
+                The columns names of the data
+    """
+    df = pd.DataFrame(data=data, columns=columns)
+    df.to_csv(filename, index=False, header=columns)
+
+# other functionailties needed.
+
+def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,inputs, targets, train, path = None, model = None):
+    MAIN_PATH = "data/state/"
+    """
+        Predictions:
+            This is for using the neural network to help produce predictions, for a model.
         
+        Args:
+            num_inputs (int):
+                This is the number of inputs we would need for the neural networks
+            num_classes (int):
+                This denotes the number of classes that is used in the neural network
+            batch_size (int):
+                This denotes the batch size used within the neural network for making predictions
+            num_epochs (int):
+                This is the number of epochs used to training the data
+            inputs (<class 'torch.Tensor'>): 
+                A tensor of inputs for the neural network
+            targets (<class 'torch.Tensor'>):
+                A tensor of inputs for the neural network
+    """
+    if model == None:
+        model = prototype(num_inputs, num_classes, learning_rate)
+
+    loss = 0
+
+    if train == True:
+        train_dataset = TensorDataset(inputs, targets)
+        train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
+        loss = model.train_model(train_loader, num_epochs)
+        if path != None:
+            torch.save(model.state_dict(), MAIN_PATH + path)
+    else:
+        if path != None:
+            model.load_state_dict(torch.load(MAIN_PATH + path))
+            model.eval()
+        
+    preds = model(inputs)
+    return preds.detach(), loss
+
+def inputs_to_tensor(filename, columns):
+    """
+        inputs_to_tensor:
+            This functions is used to read in a file (ideally a cvs file). It reads in the data that
+            is specfied by the columns. It then converts the inputs into a tensor.
+        Args:
+            filename:  
+                The filename we want to read 
+            columns:
+                The specified data columns to only read
+        Returns:
+            (<>)
+    """
+    data = pd.read_csv(filename, usecols=columns)
+    data = from_numpy(data.to_numpy(dtype='float32')) # converts the numpy array into a tensor
+    return data
+
+def df_flatten(df_array):
+    """
+        flatten:
+            Flatterns a df and turns it into a numpy array
+        Args:
+            Array ():
+        returns:
+            <numpy> : The flatten numpy array
+    """
+    return df_array.values.flatten()
+
+def tensor_flatten(tensor_array):
+    """
+        flatten:
+            Flatterns an array tensor and turns it into a numpy array
+        Args:
+            Array ():
+        returns:
+            <numpy> : The flatten numpy array
+    """
+    return tensor_array.numpy().flatten()

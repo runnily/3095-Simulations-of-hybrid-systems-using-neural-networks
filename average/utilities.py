@@ -104,7 +104,7 @@ class LossUtilities():
                 # This would then later be used for caculations
                 inputs, targets = self.simulations(time_step_1) 
             else:
-                time_step_1 = default_batch_size
+                time_step_1 =  default_time_step
                 
             num_epoches_1 = default_num_epoches if num_epoches == None else num_epoches[i]
             
@@ -123,21 +123,16 @@ class LossUtilities():
                 layers affect the loss
             Args: 
                 layer_list_of_layers: 
-                    Format example: [ [{"in_features" : x, "out_features" : y}, 
-                                        {"in_features" : x_1, "out_features" : y1},
-                                        {"in_features" : x_2, "out_features" : y_2},]
-                                        [{"in_features" : x_3, "out_features" : y_3}] ]
-                    Explained: We define an array x. Within array x we have a set amount of n arrays denoted as Y
-                               Y = y_1, y_2, y_3, ... y_n. Within each Y array is a dictionary.
+                    Format example: [ [2, 50, 100, 1], [2, 100, 500, 600, 1] ]
+                    Explained: We define an array x. Which has a set of arrays it self. These array define the number of nodes at each layer.
                     **Must be in the format denoted above to work**
             
         """
         loss_dict = {}
         for layer_list in layer_list_of_layers:
+            key = (' '.join(str(e) for e in layer_list))
             loss = self.loss_model(layer_list)
-            for x in layer_list:
-                print(x.items())
-            loss_dict[key] = loss
+            loss_dict[f"({key})"] = loss
         return loss_dict, pd.DataFrame(data=loss_dict)
 
     def loss_model(self, layer_list):
@@ -145,12 +140,9 @@ class LossUtilities():
             loss_model: Makes use of the class CustomeModel, to allow user to create a neural network model
                         based on the layers defined within the layer_list. 
         """
-
-        default_lr, default_batch_size, default_time_step, default_num_epoches, number_inputs, number_classes, inputs, targets = self.default_model_inputs()
-        model = CustomeModel(number_inputs, number_classes, default_lr, layer_list)
-        loss = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predictions(number_inputs, number_classes, default_lr, default_batch_size, default_num_epoches, inputs, targets, True, path = None, model = model)) for _ in range(30))
-   
+        lr, batch_size, time_step, num_epoches, number_inputs, number_classes, inputs, targets = self.default_model_inputs()
+        model = CustomeModel(number_inputs, number_classes, lr, layer_list)
+        loss = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(predictions)(number_inputs, number_classes, lr, batch_size, num_epoches, inputs, targets, True, None, model) for _ in range(30))
         # [x[1] for x in loss] denotes the second item within the tuples of a list
         loss = [x[1] for x in loss]
         return loss
-        

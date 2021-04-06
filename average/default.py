@@ -13,12 +13,16 @@ from simulations import van_der_pol_oscillator, laub_loomis, lorenz_system
 """
 
 class NewtonsLoss(LossUtilities):
+    """
+        This is used for reperesenting the newton loss
+        default inputs
+    """
   
     def default_model_inputs(self):
         default_lr = 0.0001
-        default_batch_size = 50
+        default_batch_size = 32
         default_time_step = 1
-        default_num_epoches = 100
+        default_num_epoches = 10
         filename = "../data/train/newtons_cooling_law.csv"
         inputs = self.inputs_to_tensor(filename, [0,1])
         targets = self.inputs_to_tensor(filename, [2])
@@ -29,18 +33,32 @@ class NewtonsLoss(LossUtilities):
 
 class VanDerPol(LossUtilities):
 
+    """
+        This is used for repersenting the van der pool systems.
+    """
+
     def simulations(self, delta):
+        """
+            simualations:
+                This defines how many simulations to performs
+            Args:
+                This is the delta to go up by
+        """
         df_simulations = van_der_pol_oscillator(delta, False)
         inputs = df_simulations[['time','initial_x','initial_y']].to_numpy(dtype='float32')
         outputs = df_simulations[['x','y']].to_numpy(dtype='float32')
         return Tensor(inputs), Tensor(outputs)
 
     def default_model_inputs(self):
+        """
+            default_model_inputs:
+                This defines the inputs of the model.
+        """
         default_lr = 0.0005
         default_batch_size = 15
         default_time_step = 0.001
         default_num_epoches = 20
-        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/van.csv?token=AHVVYT2KLS2TPXMTRIENXNLANBPOO"
+        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/van.csv?token=AHVVYT4ALQQILGRCNYZ6NTTANOO2C"
         inputs = self.inputs_to_tensor(filename, [0,3,4])
         targets = self.inputs_to_tensor(filename, [1,2])
         number_inputs = 3
@@ -48,54 +66,34 @@ class VanDerPol(LossUtilities):
         
         return default_lr, default_batch_size, default_time_step, default_num_epoches, number_inputs, number_classes, inputs, targets
 
-class lorenz(LossUtilities):
-  
-    def simulations(self, delta):
-        df_simulations = van_der_pol_oscillator(delta, False)
-        inputs = df_simulations[['time','initial_x','initial_y']].to_numpy(dtype='float32')
-        outputs = df_simulations[['x','y']].to_numpy(dtype='float32')
-        return Tensor(inputs), Tensor(outputs)
-
-    def default_model_inputs(self):
-        default_lr = 0.0001
-        default_batch_size = 500
-        default_time_step = 0.01
-        default_num_epoches = 10
-        filename = "../data/train/lorenz.csv"
-        inputs = self.inputs_to_tensor(filename, [0,4,5,6])
-        targets = self.inputs_to_tensor(filename, [1, 2, 3])
-        number_inputs = 4
-        number_classes = 3
-        return default_lr, default_batch_size, default_time_step, default_num_epoches, number_inputs, number_classes, inputs, targets
-
-class laub(LossUtilities):
+class Laub(LossUtilities):
+    """
+        Laub:
+            This performs laub function
+    """
 
     def simulations(self, delta):
+        """
+            Simulations:    
+                This is the simulations defined for the laub
+        """
         df_simulations = laub_loomis(delta, False)
         inputs = df_simulations[['time','initial_x','initial_y','initial_z','initial_w','initial_p','initial_q','initial_m']].to_numpy(dtype='float32')
         outputs = df_simulations[['x','y','z','w','p','q','m']].to_numpy(dtype='float32')  
         return Tensor(inputs), Tensor(outputs)
 
     def default_model_inputs(self):
+        """
+            default_model_inputs:
+                This are the default model inputs
+        """
         default_lr = 0.0001
         default_batch_size = 500
         default_time_step = 0.01
         default_num_epoches = 10
-        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/laub.csv?token=AHVVYT2DG6NLFI2VSUHWUVDANBUO6"
+        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/laub.csv?token=AHVVYTYVYHXSJDUB7CLQ53TANMEFS"
         inputs = self.inputs_to_tensor(filename, [0,8,9,10,11,12,13,14])
         targets = self.inputs_to_tensor(filename, [1,2,3,4,5,6,7])
         number_inputs = 8
         number_classes = 7  
         return default_lr, default_batch_size, default_time_step, default_num_epoches, number_inputs, number_classes, inputs, targets
-
-    class BouncingBall():
-
-        def simulations(self, delta):
-            """
-                TODO
-            """
-        
-        def default_model_inputs(self, delta):
-            """
-                TODO
-            """
