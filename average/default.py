@@ -14,8 +14,7 @@ from simulations import van_der_pol_oscillator, laub_loomis, lorenz_system
 
 class NewtonsLoss(LossUtilities):
     """
-        This is used for reperesenting the newton loss
-        default inputs
+        This is used for reperesenting the newton cooling loss
     """
   
     def default_model_inputs(self):
@@ -44,7 +43,7 @@ class VanDerPol(LossUtilities):
             Args:
                 This is the delta to go up by
         """
-        df_simulations = van_der_pol_oscillator(delta, False)
+        df_simulations = van_der_pol_oscillator(20.1 ,delta, False)
         inputs = df_simulations[['time','initial_x','initial_y']].to_numpy(dtype='float32')
         outputs = df_simulations[['x','y']].to_numpy(dtype='float32')
         return Tensor(inputs), Tensor(outputs)
@@ -58,7 +57,7 @@ class VanDerPol(LossUtilities):
         default_batch_size = 15
         default_time_step = 0.001
         default_num_epoches = 20
-        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/van.csv?token=AHVVYT4ALQQILGRCNYZ6NTTANOO2C"
+        filename = "../data/train/van.csv"
         inputs = self.inputs_to_tensor(filename, [0,3,4])
         targets = self.inputs_to_tensor(filename, [1,2])
         number_inputs = 3
@@ -77,7 +76,7 @@ class Laub(LossUtilities):
             Simulations:    
                 This is the simulations defined for the laub
         """
-        df_simulations = laub_loomis(delta, False)
+        df_simulations = laub_loomis(delta, 500, False)
         inputs = df_simulations[['time','initial_x','initial_y','initial_z','initial_w','initial_p','initial_q','initial_m']].to_numpy(dtype='float32')
         outputs = df_simulations[['x','y','z','w','p','q','m']].to_numpy(dtype='float32')  
         return Tensor(inputs), Tensor(outputs)
@@ -91,7 +90,7 @@ class Laub(LossUtilities):
         default_batch_size = 500
         default_time_step = 0.01
         default_num_epoches = 10
-        filename = "https://media.githubusercontent.com/media/runnily/3095-Simulations-of-hybrid-systems-using-neural-networks/main/data/train/laub.csv?token=AHVVYTYVYHXSJDUB7CLQ53TANMEFS"
+        filename = "../data/train/laub.csv"
         inputs = self.inputs_to_tensor(filename, [0,8,9,10,11,12,13,14])
         targets = self.inputs_to_tensor(filename, [1,2,3,4,5,6,7])
         number_inputs = 8

@@ -12,31 +12,41 @@ import numpy as np
 from scipy.integrate import odeint
 import pandas as pd
 
-
-def thermostat():
-    """
-        thermostat:
-            This is used for reperesent the thermostat model in our data
-    """
-    HEATING = State("Heating", lambda temp: temp <= 19 and temp < 23, lambda temp: 26 - temp )
-    NO_HEATING = State("No heating", lambda temp: temp >= 23, lambda temp: -0.1*temp )
-    thermostat = Automata(NO_HEATING, [HEATING, NO_HEATING], [lambda temp: temp < 19, lambda temp: temp >= 23]) 
-    thermostat.run(15, 1, 10000, "data/thermostat.csv")
-
-def newtons_cooling_law():
+def newtons_cooling_law(delta, simulations, save, initial_paras = None):
     """
         newtons_cooling_law:
             This is used for reperesenting the newtons cooling law in our data
     """
-    DELTA = 1
-    SIMULATIONS = 200
-
+   
+    def f(state, t):
+        temp = state
+        dtempdtime = -0.015*(temp - 22)
+        return dtempdtime
     initial_temp = [i for i in range(1, 61)]
-    for t_0 in initial_temp:
-        COOLING = State("Cooling", lambda temp: True, lambda temp: -0.015*(temp - 22))
-        newtons = Automata(COOLING, [COOLING], [lambda temp: True], t_0)
-        newtons.run(t_0, DELTA, SIMULATIONS, "data/train/newtons_cooling_law.csv")
 
+    initial_temp = range(1, 61, 1) # we want initial parameters to be x1, x2, x2 ... x9 (0.99, 1.01)
+
+    try:
+        if (initial_paras != None).any():
+            initial_temp = initial_paras
+    except AttributeError:
+        pass
+
+    newton = []
+    time = np.arange(0, simulations, delta)
+
+    for t_0 in initial_temp:
+        states_0 = [t_0]
+        state = odeint(f, states_0, time)
+
+        df = pd.DataFrame(data={'time' : time, 'temp' : state[:, 0]})
+        df['initial_temp'] = t_0
+        newton.append(df)
+    
+    newton = pd.concat(newton)
+    if save:
+        newton.to_csv("data/train/newtons_cooling_law.csv", index = False)   
+    return newton
 
 def simple_model_x0():
     """
@@ -64,7 +74,7 @@ def simple_model_x1y2():
     simple_automata_1.run(0, 1, 2000, "../data/train/simple_model_x1.csv")
     simple_automata_2.run(0, 1, 2000, "../data/train/simple_model_y2.csv")
 
-def van_der_pol_oscillator(delta, save):
+def van_der_pol_oscillator(delta, simulations, save, initial_paras = None):
     """
         van der pol oscillator:
             This is used for running a simulation of the van der pol oscillator model
@@ -78,10 +88,19 @@ def van_der_pol_oscillator(delta, save):
 
     van_df = []
     #100.1  
-    time = np.arange(0, 20.1, delta)
+    time = np.arange(0, simulations, delta)
 
-    for init_x in range(1,5):
-        for init_y in range(1,5):
+    ranges = range(1,5)
+
+    try:
+        if (initial_paras != None).any():
+            ranges = initial_paras
+    except AttributeError:
+        pass
+
+
+    for init_x in ranges:
+        for init_y in ranges:
             states_0 = [init_x, init_y]
             state = odeint(f, states_0, time)
 
@@ -97,7 +116,7 @@ def van_der_pol_oscillator(delta, save):
 
 
 
-def laub_loomis(delta, save):
+def laub_loomis(delta, simulations, save, initial_paras = None):
     """
         laub_loomis:
             This is used for reperesenting the laun loomis be
@@ -119,9 +138,15 @@ def laub_loomis(delta, save):
     STEP = 1
 
     ranges = range(MIN,MAX,STEP)
+    try:
+        if (initial_paras != None).any():
+            ranges = initial_paras
+    except AttributeError:
+        pass
+
 
     laub_loomis = []
-    time = np.arange(0, 500, delta)
+    time = np.arange(0, simulations, delta) # 0 , 500
 
     for x, y, z, w, p, q, m in product(ranges, ranges, ranges, ranges, ranges, ranges, ranges):
         states_0 = [x, y, z, w, p, q, m]
@@ -143,44 +168,57 @@ def laub_loomis(delta, save):
         laub_loomis.to_csv("data/train/laub.csv", index = False)
     return laub_loomis
 
-def lorenz_system(delta, simulations, save):
+def biological_model(delta, simulations, save, initial_paras = None):
     """
-        This runs the lorenz system model using euler method
+        This repersents a biological model
     """
-    SIGMA = 10
-    BETA = 8/3
-    RHO = 28
-    
     def f(state, t):
-        x, y, z = state
-        dxdt = SIGMA * (y - x)
-        dydt = x * (RHO - z) - y
-        dzdt = x * y - BETA * z
-        return dxdt, dydt, dzdt
-
+        x1, x2, x3, x4, x5, x6, x7, x8, x9 = state
+        dx1dt = 3 * x3 - x1 * x6 
+        dx2dt = x4 - x2 * x6
+        dx3dt = x1 * x6 - 3 * x3
+        dx4dt = x2 * x6 - x4
+        dx5dt = 3 * x3 + 5 * x1 - x5 
+        dx6dt = 5 * x5 + 3 * x3 + x4 - x6 * (x1 + x2 + 2 * x8 + 1)
+        dx7dt = 5 * x4 + x2 - 0.5 * x7
+        dx8dt = 5 * x7 - 2 * x6 * x8 + x9 - 0.2 * x8
+        dx9dt = 2 * x6 * x8 - x9
+        return dx1dt, dx2dt, dx3dt, dx4dt, dx5dt, dx6dt, dx7dt, dx8dt, dx9dt
+    
     time = np.arange(0, simulations, delta)
-    lorenz = []
-    filename = 'data/train/lorenz.csv'
+    biological_model = []
+    filename = 'data/train/biological_model.csv'
 
-    ranges = range(1,5,1)
-    for init_x, init_y, init_z in product(ranges, ranges, ranges): 
-        states_0 = [init_x, init_y, init_z]
+    ranges = np.arange(0.99, 1.01, 0.02) # we want initial parameters to be x1, x2, x2 ... x9 (0.99, 1.01)
+    try:
+        if (initial_paras != None).any():
+            ranges = initial_paras
+    except AttributeError:
+        pass
+
+    for init_x1, init_x2, init_x3, init_x4, init_x5, init_x6, init_x7, init_x8, init_x9 in product(ranges, ranges, ranges, ranges, ranges, ranges, ranges, ranges, ranges):
+        states_0 = [init_x1, init_x2, init_x3, init_x4, init_x5, init_x6, init_x7, init_x8, init_x9]
         state = odeint(f, states_0, time)
-        data = {'time' : time, 'x' : state[:, 0], 'y' : state[:, 1], 'z' : state[:, 2],}
+        data = {'time' : time, 'x1' : state[:, 0], 'x2' : state[:, 1], 'x3' : state[:, 2], 'x4' : state[:, 3],
+            'x5' : state[:, 4], 'x6' : state[:, 5], 'x7' : state[:, 6], 'x8' : state[:, 7], 'x9' : state[:, 8],}
+        
         df = pd.DataFrame(data=data)
+        df['initial_x1'] = init_x1
+        df['initial_x2'] = init_x2
+        df['initial_x3'] = init_x3
+        df['initial_x4'] = init_x4
+        df['initial_x5'] = init_x5
+        df['initial_x6'] = init_x6
+        df['initial_x7'] = init_x7
+        df['initial_x8'] = init_x8
+        df['initial_x9'] = init_x9
+        biological_model.append(df)
 
-        df['initial_x'] = init_x
-        df['initial_y'] = init_y
-        df['initial_z'] = init_z
-
-        lorenz.append(df)
-
-    lorenz =  pd.concat(lorenz)
+    biological_model =  pd.concat(biological_model)
+    
     if save:
-        lorenz.to_csv(filename, index=False)
-    return lorenz
+        biological_model.to_csv(filename, index=False)
+    return biological_model
 
 if __name__ == "__main__":
-    van_der_pol_oscillator(0.001, True)
-    laub_loomis(0.1, True)
-    lorenz_system(0.01, 50.1, True)
+    newtons_cooling_law(delta = 1, simulations = 200 , save = False, initial_paras = np.random.uniform(0, 60, 300))

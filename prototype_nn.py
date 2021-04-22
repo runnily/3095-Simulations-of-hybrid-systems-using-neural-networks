@@ -47,19 +47,9 @@ class Training():
     def gradient(self):
         pass
 
-    def feedforward(self, inputs):
-        """
-            feedforward: 
-                This is a function is used as a helper class. To translate the output
-                from the forward method into 1d vector. This is for the purpose as this 
-                regression neural network needs to be a single vector to perform
-                MSE loss
-
-            Returns: 
-                (<class 'torch.Tensor'>): Tensor of inputs as a 1d vector
-        """
-        return self.forward(inputs).reshape(-1)
-
+    @abstractmethod
+    def forward(self):
+        pass
 
     def train_model(self, training_batch_loader, num_epochs, test_inputs=None, test_targets=None):
         """
@@ -92,10 +82,8 @@ class Training():
                 inputs = inputs.to(device=self.device())
                 outputs = outputs.to(device=self.device())
 
-                outputs = outputs.reshape(-1) # To ensure outputs is all within 1d vector
-
                 # forward in the network
-                preds = self.feedforward(inputs)
+                preds = self.forward(inputs)
 
                 # This will caculate the loss
                 loss = loss_function(preds, outputs) 
@@ -110,11 +98,11 @@ class Training():
             if io:
                 test_loss_func = self.loss_function()
                 self.eval() # put on evaluation mode, that denotes trainin is false
-                test_preds = self.feedforward(test_inputs) # put inputs into the function
+                test_preds = self.forward(test_inputs) # put inputs into the function
 
                 # reshape is used to flatten the test targets
-                test_loss = test_loss_func(test_preds, test_targets.reshape(-1)) 
-                print(f"Test Loss {test_loss}", end=" ")
+                test_loss = test_loss_func(test_preds, test_targets) 
+                print(f"Test Loss {test_loss.item()}", end=" ")
 
                 test_epochs.append(test_loss.item())
                 train_epochs.append(loss.item())
@@ -126,7 +114,41 @@ class Training():
             return pd.DataFrame(data = {"Train" : train_epochs, "Test" : test_epochs})
         else:
             return loss.item()
+
         
+# Create a bidirectional LSTM
+class BRNN(nn.Module, Training):
+    def __init__(self, input_size, hidden_size, num_layers, num_classes, learning_rate):
+        super(BRNN, self).__init__()
+        self.hidden_size = hidden_size
+        self.input_size = input_size
+        self.learning_rate = learning_rate
+        self.num_layers = num_layers
+        self.lstm = nn.LSTM(
+            input_size = input_size, hidden_size = hidden_size, num_layers = num_layers, batch_first=True, bidirectional = True)
+        self.fc = nn.Linear(hidden_size * 2, num_classes)
+
+    def forward(self, inputs):
+        inputs = inputs.reshape(inputs.shape[0], -1, self.input_size) # To ensure outputs is all within 1d vector
+        h0 = torch.zeros(self.num_layers * 2, inputs.size(0), self.hidden_size).to(self.device())
+        c0 = torch.zeros(self.num_layers * 2, inputs.size(0), self.hidden_size).to(self.device())
+    
+        output, _ = self.lstm(inputs, (h0, c0))
+        output = self.fc(output[:, -1, :])
+
+        return output
+
+    def gradient(self):
+        """
+            gradient: 
+                This will return the gradient we are using
+            Returns:
+                () The gradient optimiser to use
+        """
+        return optim.Adam(self.parameters(), lr=self.learning_rate)  
+
+    def reshape(self, inputs):
+        return inputs.reshape(inputs.shape[0], -1, self.input_size)       
         
 
 class prototype(nn.Module, Training):
@@ -174,7 +196,7 @@ class prototype(nn.Module, Training):
     
     def forward(self, inputs):
         """
-        feedforward:
+        feed:
             The input data (inputs) is fed in the forward direction through the network.
             It goes through the first layer (layer_0), both applying the activation function 
             Each hidden layer accepts the input data, processes it as per the 
@@ -186,6 +208,7 @@ class prototype(nn.Module, Training):
         Returns:
             (<class 'torch.Tensor'>): A tensor of predictions provided by our neural network
         """
+        inputs = inputs.reshape(inputs.shape[0], -1) # To ensure outputs is all within 1d vector
         outputs = self.layer_0(inputs) # apply the linear function
         outputs = F.relu(outputs) # Then apply the activation function to layer_0
 
@@ -255,6 +278,7 @@ class CustomeModel(nn.Module, Training):
         self.learning_rate = learning_rate
 
     def forward(self, inputs):
+        inputs = inputs.reshape(inputs.shape[0], -1) # To ensure outputs is all within 1d vector
         for i in range(0, len(self.linear)):
             layer = self.linear[i]
             inputs = layer(inputs)
@@ -275,7 +299,7 @@ class Splitting():
     """
         Contain utilities function which can be used for training.
     """
-    def __init__(self, inputs_cols, targets_cols, lr = 0.00000015, batch_size = 500, num_epoches = 500):
+    def __init__(self, inputs_cols, targets_cols, lr = 0.00000015, batch_size = 500, num_epoches = 500, layer_list=None):
         """
             This would initalise the functions
             Args:
@@ -287,25 +311,12 @@ class Splitting():
         """
         self.inputs_cols = inputs_cols
         self.targets_cols = targets_cols
+        self.num_inputs = len(self.inputs_cols)
+        self.num_targers = len(self.targets_cols)
         self.learning_rate = lr
         self.batch_size = batch_size
         self.num_epoches = num_epoches
-
-    def split(self, dataset_df, test_frac):
-        """
-            split:
-                This is used to get select a dataset and
-                split into two halfs, depending on the percentage.
-            Args:
-                dataset_df <Pandas df> : The amount of df to use
-                frac (float): The percentage to use
-            Returns:
-                (<class 'pandas.core.frame.DataFrame'>), training df
-                (<class 'pandas.core.frame.DataFrame'>), test df
-        """
-        train, test = train_test_split(dataset_df, test_size=test_frac)
-        return train, test
-
+        self.layer_list = layer_list
 
     def cross_validation(self, train_df, groups):
         """
@@ -375,7 +386,10 @@ class Splitting():
             train = [groups_df[x] for x in range(len(groups_df)) if x != idx]
             
             # This creates a new model, for every group
-            model = prototype(4, 3, self.learning_rate)
+            if self.layer_list == None:
+                model = prototype(self.num_inputs, self.num_targers, self.learning_rate)
+            else:
+                model = CustomeModel(self.num_inputs, self.num_targers, self.learning_rate, self.layer_list)
 
             # pandas concat dataframes together.
             train = pd.concat(train)
@@ -419,7 +433,6 @@ def save(filename, data, columns):
 # other functionailties needed.
 
 def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,inputs, targets, train, path = None, model = None):
-    MAIN_PATH = "data/state/"
     """
         Predictions:
             This is for using the neural network to help produce predictions, for a model.
@@ -448,10 +461,10 @@ def predictions(num_inputs, num_classes, learning_rate, batch_size, num_epochs,i
         train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True) 
         loss = model.train_model(train_loader, num_epochs)
         if path != None:
-            torch.save(model.state_dict(), MAIN_PATH + path)
+            torch.save(model.state_dict(),  path)
     else:
         if path != None:
-            model.load_state_dict(torch.load(MAIN_PATH + path))
+            model.load_state_dict(torch.load(path))
             model.eval()
         
     preds = model(inputs)

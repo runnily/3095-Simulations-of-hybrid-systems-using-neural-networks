@@ -15,8 +15,10 @@ TITLE_CUSTOME = "Custome items"
 
 HIDDEN_LAYERS_0 = [50, 75, 100, 125, 150, 175, 200, 225]
 HIDDEN_LAYERS_1 = [50, 250, 350, 450, 550, 650, 750, 850]
-HIDDEN_LAYERS_2 = [600, 800, 100, 1000, 2]
+HIDDEN_LAYERS_2 = [600, 800, 100, 1000]
 HIDDEN_LAYERS_3 = [600, 800, 1000]
+
+HIDDEN_LAYERS_4 = [25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300]
 
 HIDDEN_LAYERS = [HIDDEN_LAYERS_0, HIDDEN_LAYERS_1, HIDDEN_LAYERS_2, HIDDEN_LAYERS_3]
 
@@ -63,7 +65,8 @@ def append_inputs_outputs_layers(num_inputs, num_outputs):
 
 def newton(lr=False, batch_size=False, num_epoches=False, custome=False, layer=False):
     """
-        newton allows code executions.
+        newton: This is assoicated with gathering all the data with the assoicated learning
+                parameters.
     """
     if lr:
         para = {"lr" : [0.1, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001]}
@@ -83,9 +86,14 @@ def newton(lr=False, batch_size=False, num_epoches=False, custome=False, layer=F
         test_layers = append_inputs_outputs_layers(num_inputs=2, num_outputs=1)
         loss = default.NewtonsLoss()
         _, df = loss.loss_modeling(test_layers)
-        df.to_csv("../data/boxplots/newton/layers.csv")
+        print(TITLE_CUSTOME)
+        df.to_csv("../data/boxplots/newton/layers.csv",index=False)
 
 def van(lr = False, batch_size = False, num_epoches = False, time_step = False, custome = False, layer = False):
+    """
+        van: This is for collecting 30 data loss items with the assoicated learning parameters defined within
+             the dictionatary
+    """
     if num_epoches:
         para = {"num_epoches" : [10, 20, 30,]}
         thiry_data_items(TITLE_NUM_EPOCHES, default.VanDerPol(),"../data/boxplots/van/num_epoches.csv", **para)
@@ -109,10 +117,16 @@ def van(lr = False, batch_size = False, num_epoches = False, time_step = False, 
         test_layers = append_inputs_outputs_layers(num_inputs=3, num_outputs=2)
         loss = default.VanDerPol()
         _, df = loss.loss_modeling(test_layers)
-        df.to_csv("../data/boxplots/van/layers.csv")
+        print(TITLE_CUSTOME)
+        df.to_csv("../data/boxplots/van/layers.csv", index=False)
 
 
 def laub(lr = False, batch_size = False, num_epoches = False, time_step = False, custome = False, layer = False):
+    """
+        laub:
+            This is for gathering a collecting of 30 data loss items with the assoicated learning 
+            parameter defined within the dictionary.
+    """
     if lr:
         para = {"lr" : [0.0001, 0.00005, 0.000005, 0.0000005, 0.00000005, 0.000000005]}
         thiry_data_items(TITLE_LR, default.Laub(),"../data/boxplots/laub/lr.csv", **para)
@@ -136,12 +150,11 @@ def laub(lr = False, batch_size = False, num_epoches = False, time_step = False,
         test_layers = append_inputs_outputs_layers(num_inputs=8, num_outputs=7)
         loss = default.Laub()
         _, df = loss.loss_modeling(test_layers)
-        df.to_csv("../data/boxplots/van/layers.csv")
-
+        print(TITLE_CUSTOME)
+        df.to_csv("../data/boxplots/laub/layers.csv", index=False)
+    
 
 if __name__== "__main__":
     # Add data here for plots you want to collect
     print("..Collecting data..")
-
-    newton(layer=True)
-    #newton(False, False, False, True)
+    #newton(layer=True)
