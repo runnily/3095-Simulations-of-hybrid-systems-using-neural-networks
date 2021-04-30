@@ -4,9 +4,6 @@
              simulations of those models
     Date:   09/02/21
 """
-from models import State
-from models import Automata
-from models import AutomataSys
 from itertools import product
 import numpy as np
 from scipy.integrate import odeint
@@ -47,32 +44,6 @@ def newtons_cooling_law(delta, simulations, save, initial_paras = None):
     if save:
         newton.to_csv("data/train/newtons_cooling_law.csv", index = False)   
     return newton
-
-def simple_model_x0():
-    """
-        This is a very simple model to test the neural network and 
-        see wether it performs correctly
-    """
-    MODEL = State("None", lambda n: True, lambda x: 0)
-    simple_automata = Automata(MODEL, [MODEL], [lambda n: True])
-
-    simple_automata.run(1, 1, 1000, "../data/train/simple_model_x0.csv")
-    simple_automata.run(1, 1, 100, "../data/test/simple_model_x0.csv", 1000)
-
-def simple_model_x1y2():
-    """
-        simple_model:
-            This is a simple models to test the neural network
-    """
-    MODEL_1 = State("None", lambda n: True, lambda x: 1)
-    simple_automata_1 = Automata(MODEL_1, [MODEL_1], [lambda n: True])
-
-    MODEL_2 = State("None", lambda n: True, lambda y: 2)
-    simple_automata_2 = Automata(MODEL_2, [MODEL_2], [lambda n: True])
-
-
-    simple_automata_1.run(0, 1, 2000, "../data/train/simple_model_x1.csv")
-    simple_automata_2.run(0, 1, 2000, "../data/train/simple_model_y2.csv")
 
 def van_der_pol_oscillator(delta, simulations, save, initial_paras = None):
     """

@@ -13,62 +13,6 @@ from torch.utils.data import TensorDataset, DataLoader # For mini batches
 import pandas as pd
 MAIN_PATH = "data/state/"
 
-def predicting_simple_model_x0():
-    """
-        This is the first models that I will be using in my neural network. This is to used to check
-        the main functionailty of the neural network is working correctly. Essentially our model is
-        predicting the model with behaviou x' = 1. Therefore our model should always produce 1.
-    """
-
-    # Get inputs and targets from file 
-    filename = "data/train/simple_model_x0.csv"
-    inputs = inputs_to_tensor(filename, [0])
-    targets = inputs_to_tensor(filename, [1])
-
-    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=301000, num_epochs=200, inputs=inputs, targets=targets, train=True, path= MAIN_PATH+"simple_model_x0.pth" )
-    save("data/preds/train/simple_model_x0.csv",  {'x' : inputs.numpy().flatten(), 'y' : tensor_flatten(preds)}, ["x", "y"])
-
-def predicting_simple_model_x1():
-    """
-        This is the model correspond to a 1st behaviour in the second model, I specified on the paper x' = 1. 
-        This data containing the behaviour (inputs and outputs of the differencial equations) will be
-        put into the neural network.
-    """
-    # Get inputs and targets from file 
-    filename = "data/train/simple_model_x1.csv"
-    inputs = inputs_to_tensor(filename, [0])
-    targets = inputs_to_tensor(filename, [1])
-
-    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path= MAIN_PATH + "simple_model_x1.pth" )
-    save("data/preds/train/simple_model_x1.csv",  {'x' : inputs.numpy().flatten(), 'y' : tensor_flatten(preds)}, ["x", "y"])
-
-def predicting_simple_model_y2():
-    """
-        This is the model correspond to a 2nd behaviour in the second model, I specified on the paper y' = 2.
-        This data containing the behaviour (inputs and outputs of the differencial equations) will be
-        put into the neural network.
-    """
-
-    # Get inputs and targets from file 
-    filename = "data/train/simple_model_y2.csv"
-    inputs = inputs_to_tensor(filename, [0])
-    targets = inputs_to_tensor(filename, [1])
-
-    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.00001, batch_size=50, num_epochs=2000, inputs=inputs, targets=targets, train=True, path= MAIN_PATH + "simple_model_y2.pth" )
-    save("data/preds/train/simple_model_y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : tensor_flatten(preds)}, ["x", "y"])
-
-def predicting_simple_model_x1y2():
-    """
-        This is the modal correspond to the 2 behvious in the second model, I specifed in the paper. Both equations
-        work together. 
-    """
-
-    # Get inputs and targets from file 
-    inputs = inputs_to_tensor("data/train/simple_model_x1.csv", [0])
-    targets = inputs_to_tensor("data/train/simple_model_y2.csv", [1])
-    preds, _ = predictions(num_inputs=1, num_classes=1, learning_rate=0.000001, batch_size=50, num_epochs=5000, inputs=inputs, targets=targets, train=True, path= MAIN_PATH + "simple_model_x1y2.pth" )
-    save("data/preds/train/simple_model_x1y2.csv",  {'x' : inputs.numpy().flatten(), 'y' : tensor_flatten(preds)}, ["x", "y"])
-
 def predicting_newtons_cooling_law():
     """
         predicting_cooling:
