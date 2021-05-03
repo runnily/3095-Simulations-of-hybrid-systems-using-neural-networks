@@ -115,42 +115,6 @@ class Training():
         else:
             return loss.item()
 
-        
-# Create a bidirectional LSTM
-class BRNN(nn.Module, Training):
-    def __init__(self, input_size, hidden_size, num_layers, num_classes, learning_rate):
-        super(BRNN, self).__init__()
-        self.hidden_size = hidden_size
-        self.input_size = input_size
-        self.learning_rate = learning_rate
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(
-            input_size = input_size, hidden_size = hidden_size, num_layers = num_layers, batch_first=True, bidirectional = True)
-        self.fc = nn.Linear(hidden_size * 2, num_classes)
-
-    def forward(self, inputs):
-        inputs = inputs.reshape(inputs.shape[0], -1, self.input_size) # To ensure outputs is all within 1d vector
-        h0 = torch.zeros(self.num_layers * 2, inputs.size(0), self.hidden_size).to(self.device())
-        c0 = torch.zeros(self.num_layers * 2, inputs.size(0), self.hidden_size).to(self.device())
-    
-        output, _ = self.lstm(inputs, (h0, c0))
-        output = self.fc(output[:, -1, :])
-
-        return output
-
-    def gradient(self):
-        """
-            gradient: 
-                This will return the gradient we are using
-            Returns:
-                () The gradient optimiser to use
-        """
-        return optim.Adam(self.parameters(), lr=self.learning_rate)  
-
-    def reshape(self, inputs):
-        return inputs.reshape(inputs.shape[0], -1, self.input_size)       
-        
-
 class prototype(nn.Module, Training):
     """
         prototype:
