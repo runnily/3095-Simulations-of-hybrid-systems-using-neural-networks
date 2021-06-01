@@ -5,6 +5,7 @@ This is my dissetetation project at Newcastle Univerity. This project contains a
 of files/folders used for experiementing how well neural networks can simulate a hybrid system.
 
 The abstract of the dissertation project is as follows:
+
 "Processes that occur in engineering fields and processes that occur in nature 
 can be modelled using a dynamical system.  A dynamical system is a system with 
 a function based on an ordinary differential equation (ODE). An ODE describes 
