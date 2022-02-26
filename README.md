@@ -4,7 +4,7 @@
 This is my dissetetation project at Newcastle Univerity. This project contains a list 
 of files/folders used for experiementing how well neural networks to simulate a dynamic system
 
-“Processes that occur in engineering fields and processes that occur in nature 
+> “Processes that occur in engineering fields and processes that occur in nature 
 can be modelled using a dynamical system.  A dynamical system is a system with 
 a function based on an ordinary differential equation (ODE). An ODE describes 
 the evolution (changes) of a variable through time. Numerical simulations are 
